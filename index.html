@@ -1,0 +1,1577 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0b1220" />
+  <meta name="description" content="Central local e privada para PDI, liderança, desenvolvimento de equipe, projeto e portfólio profissional." />
+  <title>Núcleo — Central de Desenvolvimento</title>
+  <style>
+:root {
+  color-scheme: light;
+  --bg: #f3f5f8;
+  --surface: #ffffff;
+  --surface-2: #f7f8fb;
+  --surface-3: #eef1f5;
+  --text: #172033;
+  --muted: #687287;
+  --subtle: #8c95a6;
+  --line: #e1e5ec;
+  --line-strong: #cfd5df;
+  --navy: #0b1220;
+  --navy-2: #111c31;
+  --accent: #1d7a78;
+  --accent-2: #155e75;
+  --accent-soft: #e1f2f1;
+  --gold: #b88736;
+  --gold-soft: #f7eddb;
+  --success: #21835a;
+  --warning: #b56b17;
+  --danger: #b44242;
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, .06);
+  --shadow-md: 0 14px 40px rgba(15, 23, 42, .10);
+  --radius-sm: 10px;
+  --radius: 16px;
+  --radius-lg: 22px;
+  --sidebar-w: 260px;
+  --font: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0d1421;
+  --surface: #121c2c;
+  --surface-2: #162234;
+  --surface-3: #1b293e;
+  --text: #edf2f8;
+  --muted: #a6b0c0;
+  --subtle: #7f8ba0;
+  --line: #26354b;
+  --line-strong: #34455f;
+  --navy: #08101d;
+  --navy-2: #111c31;
+  --accent: #49aaa5;
+  --accent-2: #60a5b8;
+  --accent-soft: #173537;
+  --gold: #d2a75f;
+  --gold-soft: #3a2d1c;
+  --success: #5ec493;
+  --warning: #e4a14b;
+  --danger: #ed7b7b;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, .22);
+  --shadow-md: 0 16px 44px rgba(0, 0, 0, .28);
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  min-height: 100vh;
+  line-height: 1.5;
+}
+button, input, textarea, select { font: inherit; }
+button { color: inherit; }
+a { color: var(--accent); }
+[hidden] { display: none !important; }
+
+.app-shell { min-height: 100vh; }
+.sidebar {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: var(--sidebar-w);
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, var(--navy), #0d1829 70%, #0a1422);
+  color: #e9eef7;
+  padding: 22px 16px;
+  z-index: 30;
+  box-shadow: 8px 0 30px rgba(6, 12, 24, .12);
+}
+.brand { display: flex; align-items: center; gap: 12px; padding: 0 8px 24px; }
+.brand-mark {
+  width: 42px; height: 42px; border-radius: 13px;
+  display: grid; place-items: center;
+  background: linear-gradient(145deg, #2e9b96, #155e75);
+  font-weight: 800; font-size: 21px;
+  box-shadow: inset 0 1px rgba(255,255,255,.2), 0 8px 18px rgba(0,0,0,.22);
+}
+.brand strong { display:block; font-size: 17px; letter-spacing: .01em; }
+.brand span { color: #98a8be; font-size: 11px; display:block; margin-top:1px; }
+.nav { display:flex; flex-direction:column; gap:4px; overflow:auto; padding-right:2px; }
+.nav-item {
+  appearance:none; border:0; background:transparent; width:100%;
+  display:flex; align-items:center; gap:12px; text-align:left;
+  color:#aeb9c9; padding:10px 12px; border-radius:11px;
+  cursor:pointer; transition:.18s ease; font-size:14px;
+}
+.nav-item:hover { background:rgba(255,255,255,.07); color:#fff; }
+.nav-item.active { background:rgba(73,170,165,.16); color:#fff; box-shadow: inset 3px 0 #49aaa5; }
+.nav-icon { width:22px; text-align:center; font-size:17px; color:#8fa1b8; }
+.nav-item.active .nav-icon { color:#71c9c5; }
+.sidebar-footer { margin-top:auto; padding-top:14px; border-top:1px solid rgba(255,255,255,.08); }
+.privacy-chip { margin:12px 10px 0; color:#8291a6; font-size:10px; display:flex; gap:7px; align-items:center; }
+.privacy-chip span { width:7px;height:7px;border-radius:50%;background:#49aaa5;box-shadow:0 0 0 4px rgba(73,170,165,.12); }
+
+.main-column { margin-left:var(--sidebar-w); min-height:100vh; }
+.topbar {
+  position:sticky; top:0; z-index:20;
+  min-height:84px; padding:15px 28px;
+  display:flex; align-items:center; justify-content:space-between; gap:20px;
+  background:color-mix(in srgb, var(--surface) 91%, transparent);
+  backdrop-filter: blur(18px);
+  border-bottom:1px solid var(--line);
+}
+.page-heading p, .eyebrow { margin:0; text-transform:uppercase; letter-spacing:.11em; font-size:10px; font-weight:700; color:var(--accent); }
+.page-heading h1 { margin:2px 0 0; font-size:23px; line-height:1.2; letter-spacing:-.025em; }
+.topbar-actions { display:flex; align-items:center; gap:9px; }
+.search-wrap {
+  height:40px; min-width:260px; display:flex; align-items:center; gap:8px;
+  background:var(--surface-2); border:1px solid var(--line); border-radius:11px; padding:0 11px;
+}
+.search-wrap input { width:100%; border:0; outline:0; background:transparent; color:var(--text); font-size:13px; }
+.search-wrap input::placeholder { color:var(--subtle); }
+.icon-button {
+  width:40px; height:40px; border:1px solid var(--line); border-radius:11px;
+  background:var(--surface); cursor:pointer; display:grid; place-items:center;
+  transition:.18s ease; box-shadow:var(--shadow-sm);
+}
+.icon-button:hover { transform:translateY(-1px); border-color:var(--line-strong); }
+.button {
+  border:1px solid var(--line); border-radius:11px; background:var(--surface);
+  padding:10px 14px; cursor:pointer; font-weight:700; font-size:13px; transition:.18s ease;
+}
+.button:hover { transform:translateY(-1px); box-shadow:var(--shadow-sm); }
+.button-primary { background:var(--accent); color:white; border-color:transparent; }
+.button-danger { color:var(--danger); }
+.button-ghost { background:transparent; box-shadow:none; }
+.button-small { padding:7px 10px; font-size:12px; }
+
+.save-strip {
+  position:fixed; right:24px; bottom:18px; z-index:40;
+  display:flex; align-items:center; gap:8px; padding:8px 11px;
+  border-radius:999px; background:var(--navy); color:#dbe5f2; font-size:11px;
+  box-shadow:var(--shadow-md); opacity:.88;
+}
+.save-dot { width:7px;height:7px;border-radius:50%;background:#62c89b; }
+.save-strip.saving .save-dot { background:#e0a451; animation:pulse 1s infinite; }
+@keyframes pulse { 50% { opacity:.35; } }
+
+main { padding:28px; max-width:1560px; margin:0 auto; }
+.page { animation:fadeIn .22s ease; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(4px); } }
+
+.hero {
+  background:
+    radial-gradient(circle at 86% 16%, rgba(73,170,165,.22), transparent 31%),
+    linear-gradient(135deg, #0d1728 0%, #14243d 66%, #17353b 120%);
+  color:#f2f6fb; border-radius:var(--radius-lg); padding:28px;
+  box-shadow:var(--shadow-md); position:relative; overflow:hidden;
+}
+.hero::after { content:""; position:absolute; width:250px; height:250px; border:1px solid rgba(255,255,255,.07); border-radius:50%; right:-90px; top:-100px; }
+.hero-grid { display:grid; grid-template-columns:1.5fr .8fr; gap:24px; align-items:end; }
+.hero .eyebrow { color:#75cbc6; }
+.hero h2 { font-size:30px; max-width:760px; letter-spacing:-.035em; margin:8px 0; line-height:1.15; }
+.hero p { color:#b8c5d6; max-width:780px; margin:0; }
+.hero-actions { display:flex; gap:9px; flex-wrap:wrap; margin-top:19px; }
+.hero .button:not(.button-primary) { background:rgba(255,255,255,.08); color:#fff; border-color:rgba(255,255,255,.12); }
+.hero-aside { border-left:1px solid rgba(255,255,255,.12); padding-left:22px; }
+.hero-aside small { color:#91a4bb; text-transform:uppercase; letter-spacing:.08em; }
+.hero-aside strong { font-size:38px; display:block; margin:2px 0; }
+
+.grid { display:grid; gap:16px; }
+.grid-2 { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.grid-3 { grid-template-columns:repeat(3,minmax(0,1fr)); }
+.grid-4 { grid-template-columns:repeat(4,minmax(0,1fr)); }
+.grid-dashboard { grid-template-columns:1.2fr .8fr; }
+.section { margin-top:22px; }
+.section-header { display:flex; justify-content:space-between; align-items:flex-end; gap:14px; margin-bottom:12px; }
+.section-header h2 { margin:0; font-size:18px; letter-spacing:-.02em; }
+.section-header p { margin:3px 0 0; color:var(--muted); font-size:12px; }
+.section-actions { display:flex; gap:8px; align-items:center; }
+
+.card {
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+  box-shadow:var(--shadow-sm); padding:18px; min-width:0;
+}
+.card:hover { border-color:color-mix(in srgb, var(--line-strong) 70%, var(--accent)); }
+.card-flat { box-shadow:none; }
+.card-accent { background:linear-gradient(145deg,var(--surface),var(--accent-soft)); }
+.card-title { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; margin-bottom:12px; }
+.card-title h3 { margin:0; font-size:15px; }
+.card-title p { margin:3px 0 0; font-size:11px; color:var(--muted); }
+.card-actions { display:flex; gap:5px; flex-shrink:0; }
+.card-actions button { width:31px;height:31px;border:0;background:var(--surface-2);border-radius:8px;cursor:pointer;color:var(--muted); }
+.card-actions button:hover { color:var(--text); background:var(--surface-3); }
+
+.metric { padding:18px; }
+.metric-label { color:var(--muted); font-size:11px; text-transform:uppercase; letter-spacing:.07em; font-weight:700; }
+.metric-value { font-size:29px; font-weight:800; letter-spacing:-.04em; margin:4px 0 2px; }
+.metric-foot { color:var(--muted); font-size:11px; }
+.metric-icon { float:right; width:34px;height:34px;border-radius:10px;background:var(--accent-soft);display:grid;place-items:center;color:var(--accent); }
+
+.progress { width:100%; height:7px; border-radius:99px; background:var(--surface-3); overflow:hidden; }
+.progress > span { height:100%; display:block; background:linear-gradient(90deg,var(--accent),var(--accent-2)); border-radius:inherit; }
+.progress-row { display:flex; align-items:center; gap:10px; }
+.progress-row .progress { flex:1; }
+.progress-row strong { font-size:12px; min-width:34px; text-align:right; }
+
+.status { display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:5px 8px;font-size:10px;font-weight:800;letter-spacing:.02em;white-space:nowrap; }
+.status::before { content:"";width:6px;height:6px;border-radius:50%;background:currentColor; }
+.status-planejado { color:#667085;background:var(--surface-3); }
+.status-andamento { color:var(--accent-2);background:var(--accent-soft); }
+.status-atencao { color:var(--warning);background:var(--gold-soft); }
+.status-concluido { color:var(--success);background:color-mix(in srgb,var(--success) 12%, transparent); }
+.status-bloqueado { color:var(--danger);background:color-mix(in srgb,var(--danger) 12%, transparent); }
+
+.list { display:flex; flex-direction:column; gap:9px; }
+.list-item {
+  display:flex; gap:12px; align-items:flex-start; padding:12px;
+  background:var(--surface-2); border:1px solid var(--line); border-radius:12px;
+}
+.list-item-main { flex:1; min-width:0; }
+.list-item h4 { margin:0 0 3px; font-size:13px; }
+.list-item p { margin:0;color:var(--muted);font-size:11px;white-space:pre-wrap; }
+.list-meta { display:flex;flex-wrap:wrap;gap:7px;margin-top:8px;color:var(--muted);font-size:10px; }
+.avatar { width:36px;height:36px;border-radius:11px;display:grid;place-items:center;background:linear-gradient(145deg,var(--accent-soft),var(--surface-3));font-weight:800;color:var(--accent);flex-shrink:0; }
+
+.empty-state { text-align:center;padding:28px 20px;color:var(--muted);border:1px dashed var(--line-strong);border-radius:14px;background:var(--surface-2); }
+.empty-state strong { display:block;color:var(--text);font-size:14px;margin-bottom:4px; }
+.empty-state p { margin:0 auto 12px; max-width:480px; font-size:12px; }
+
+.form-grid { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px; }
+.form-grid-3 { grid-template-columns:repeat(3,minmax(0,1fr)); }
+.field { display:flex;flex-direction:column;gap:6px;min-width:0; }
+.field-full { grid-column:1/-1; }
+.field label { font-size:11px;font-weight:800;color:var(--muted); }
+.field small { color:var(--subtle);font-size:10px; }
+.input, .textarea, .select {
+  width:100%;border:1px solid var(--line);border-radius:10px;background:var(--surface-2);color:var(--text);
+  padding:10px 11px;outline:0;transition:.15s ease;font-size:13px;
+}
+.input:focus,.textarea:focus,.select:focus { border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 13%,transparent);background:var(--surface); }
+.textarea { min-height:96px;resize:vertical; }
+.textarea-tall { min-height:150px; }
+.input[type="range"] { padding:0; }
+.form-actions { display:flex;justify-content:flex-end;gap:8px;margin-top:18px;padding-top:15px;border-top:1px solid var(--line); }
+
+.inline-edit { border:1px dashed transparent;border-radius:8px;padding:5px 6px;margin:-5px -6px;min-height:1.6em; }
+.inline-edit:hover { border-color:var(--line-strong);background:var(--surface-2); }
+.inline-edit:focus { outline:0;border-style:solid;border-color:var(--accent);background:var(--surface);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 10%,transparent); }
+
+.table-wrap { overflow:auto;border:1px solid var(--line);border-radius:13px; }
+table { border-collapse:collapse;width:100%;min-width:720px;background:var(--surface); }
+th,td { text-align:left;padding:11px 12px;border-bottom:1px solid var(--line);font-size:11px;vertical-align:top; }
+th { background:var(--surface-2);color:var(--muted);font-size:10px;text-transform:uppercase;letter-spacing:.06em;position:sticky;top:0; }
+tr:last-child td { border-bottom:0; }
+
+.tab-bar { display:flex;gap:5px;flex-wrap:wrap;background:var(--surface-2);padding:5px;border:1px solid var(--line);border-radius:13px;margin-bottom:16px; }
+.tab-button { border:0;background:transparent;padding:8px 11px;border-radius:9px;cursor:pointer;font-size:11px;font-weight:800;color:var(--muted); }
+.tab-button.active { background:var(--surface);color:var(--text);box-shadow:var(--shadow-sm); }
+
+.callout { display:flex;gap:12px;padding:15px;border:1px solid var(--line);border-radius:13px;background:var(--surface-2); }
+.callout-icon { width:32px;height:32px;border-radius:10px;display:grid;place-items:center;background:var(--accent-soft);color:var(--accent);font-weight:800;flex-shrink:0; }
+.callout strong { display:block;font-size:12px; }
+.callout p { margin:3px 0 0;color:var(--muted);font-size:11px; }
+
+.maturity-row { display:grid;grid-template-columns:1.1fr 1.6fr 48px;gap:12px;align-items:center;padding:11px 0;border-bottom:1px solid var(--line); }
+.maturity-row:last-child { border-bottom:0; }
+.maturity-row h4 { margin:0;font-size:12px; }
+.maturity-row p { margin:2px 0 0;color:var(--muted);font-size:10px; }
+.score-pill { width:42px;height:32px;border-radius:9px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-weight:800; }
+
+.timeline { position:relative;padding-left:20px; }
+.timeline::before { content:"";position:absolute;left:6px;top:5px;bottom:5px;width:1px;background:var(--line-strong); }
+.timeline-item { position:relative;padding:0 0 16px 10px; }
+.timeline-item::before { content:"";position:absolute;left:-18px;top:4px;width:9px;height:9px;border-radius:50%;background:var(--accent);border:3px solid var(--surface);box-shadow:0 0 0 1px var(--accent); }
+.timeline-item h4 { margin:0;font-size:12px; }
+.timeline-item p { margin:3px 0 0;color:var(--muted);font-size:11px; }
+.timeline-item time { color:var(--subtle);font-size:9px;text-transform:uppercase;letter-spacing:.08em; }
+
+.kanban { display:grid;grid-template-columns:repeat(4,minmax(230px,1fr));gap:12px;overflow:auto;padding-bottom:8px; }
+.kanban-column { background:var(--surface-2);border:1px solid var(--line);border-radius:14px;padding:10px;min-height:180px; }
+.kanban-header { display:flex;justify-content:space-between;align-items:center;padding:3px 3px 10px; }
+.kanban-header strong { font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted); }
+.kanban-count { font-size:10px;background:var(--surface-3);padding:3px 7px;border-radius:999px; }
+.kanban-card { background:var(--surface);border:1px solid var(--line);border-radius:11px;padding:11px;margin-bottom:8px;box-shadow:var(--shadow-sm);cursor:pointer; }
+.kanban-card h4 { margin:0 0 5px;font-size:12px; }
+.kanban-card p { margin:0;color:var(--muted);font-size:10px; }
+
+.file-drop { border:1.5px dashed var(--line-strong);border-radius:15px;padding:26px;text-align:center;background:var(--surface-2);cursor:pointer;transition:.18s ease; }
+.file-drop:hover,.file-drop.dragover { border-color:var(--accent);background:var(--accent-soft); }
+.file-drop strong { display:block;font-size:13px; }
+.file-drop p { margin:4px 0 0;color:var(--muted);font-size:11px; }
+.file-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px; }
+.file-card { padding:14px; }
+.file-type { width:39px;height:45px;border-radius:8px 8px 12px 8px;background:var(--accent-soft);display:grid;place-items:center;color:var(--accent);font-weight:800;font-size:10px; }
+.file-card-row { display:flex;gap:11px;align-items:flex-start; }
+.file-card h4 { margin:0;font-size:12px;word-break:break-word; }
+.file-card p { margin:3px 0 0;color:var(--muted);font-size:10px; }
+
+.method-card { position:relative;overflow:hidden; }
+.method-number { position:absolute;right:13px;top:7px;font-size:54px;font-weight:900;color:var(--surface-3);line-height:1;z-index:0; }
+.method-card > *:not(.method-number) { position:relative;z-index:1; }
+.method-card h3 { margin:0 0 6px;font-size:15px; }
+.method-card p { margin:0;color:var(--muted);font-size:11px; }
+.method-card ul { margin:11px 0 0;padding-left:17px;color:var(--muted);font-size:11px; }
+
+.modal-backdrop { position:fixed;inset:0;background:rgba(4,10,20,.55);backdrop-filter:blur(8px);z-index:100;display:grid;place-items:center;padding:20px; }
+.modal { width:min(760px,100%);max-height:min(90vh,900px);overflow:hidden;background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:0 28px 80px rgba(0,0,0,.3);display:flex;flex-direction:column; }
+.modal-wide { width:min(980px,100%); }
+.modal-header { display:flex;justify-content:space-between;align-items:flex-start;padding:19px 21px;border-bottom:1px solid var(--line); }
+.modal-header h2 { margin:3px 0 0;font-size:20px; }
+.modal-body { padding:20px;overflow:auto; }
+
+.toast-region { position:fixed;right:22px;top:95px;z-index:120;display:flex;flex-direction:column;gap:8px; }
+.toast { min-width:250px;max-width:360px;background:var(--navy);color:#edf3fa;padding:11px 13px;border-radius:11px;box-shadow:var(--shadow-md);font-size:11px;animation:toastIn .2s ease; }
+.toast strong { display:block;font-size:12px;margin-bottom:2px; }
+@keyframes toastIn { from { opacity:0;transform:translateX(12px); } }
+
+.search-results { position:fixed;top:70px;right:174px;width:min(520px,calc(100vw - 40px));max-height:65vh;overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow-md);z-index:80;padding:8px; }
+.search-result { width:100%;border:0;background:transparent;text-align:left;padding:10px;border-radius:10px;cursor:pointer; }
+.search-result:hover { background:var(--surface-2); }
+.search-result strong { display:block;font-size:12px; }
+.search-result span { display:block;color:var(--muted);font-size:10px;margin-top:2px; }
+mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0 2px; }
+
+.quick-capture { display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px; }
+.quick-capture button { padding:14px 10px;border:1px solid var(--line);border-radius:12px;background:var(--surface);cursor:pointer;text-align:left; }
+.quick-capture button:hover { border-color:var(--accent);background:var(--accent-soft); }
+.quick-capture strong { display:block;font-size:12px; }
+.quick-capture span { color:var(--muted);font-size:10px; }
+
+.note-editor { min-height:220px; padding:14px; background:var(--surface-2); border:1px solid var(--line); border-radius:12px; outline:0; white-space:pre-wrap; }
+.note-editor:focus { border-color:var(--accent); box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 12%,transparent); }
+
+.kbd { border:1px solid var(--line-strong);border-bottom-width:2px;border-radius:5px;padding:1px 5px;font-size:9px;background:var(--surface-2); }
+.mobile-only { display:none; }
+
+@media (max-width: 1120px) {
+  .grid-4 { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .grid-3 { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .hero-grid,.grid-dashboard { grid-template-columns:1fr; }
+  .hero-aside { border-left:0;border-top:1px solid rgba(255,255,255,.12);padding:18px 0 0; }
+  .quick-capture { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+@media (max-width: 820px) {
+  :root { --sidebar-w: 0px; }
+  .sidebar { transform:translateX(-102%); width:260px;transition:.22s ease; }
+  .sidebar.open { transform:translateX(0); }
+  .mobile-only { display:grid; }
+  .topbar { padding:12px 16px;min-height:72px; }
+  .page-heading p { display:none; }
+  .page-heading h1 { font-size:19px; }
+  .search-wrap { min-width:0;width:42px;padding:0 12px;overflow:hidden;transition:.2s ease; }
+  .search-wrap:focus-within { position:absolute;left:16px;right:16px;top:77px;width:auto;background:var(--surface);box-shadow:var(--shadow-md); }
+  .search-wrap input { min-width:190px; }
+  #quickAdd { padding:10px; }
+  #quickAdd { font-size:0; }
+  #quickAdd::after { content:"+";font-size:19px; }
+  main { padding:18px 14px 80px; }
+  .hero { padding:22px; }
+  .hero h2 { font-size:25px; }
+  .grid-2,.grid-3,.grid-4,.form-grid,.form-grid-3 { grid-template-columns:1fr; }
+  .save-strip { right:12px;bottom:12px; }
+  .search-results { top:126px;right:16px;left:16px;width:auto; }
+}
+@media (max-width: 520px) {
+  .topbar-actions { gap:5px; }
+  .theme-toggle { display:none; }
+  .hero-actions { flex-direction:column; }
+  .hero-actions .button { width:100%; }
+  .quick-capture { grid-template-columns:1fr; }
+  .metric-value { font-size:25px; }
+  .modal-backdrop { padding:0;align-items:end; }
+  .modal { border-radius:20px 20px 0 0;max-height:94vh; }
+  .maturity-row { grid-template-columns:1fr 48px; }
+  .maturity-row .range-wrap { grid-column:1/-1;grid-row:2; }
+}
+
+@media print {
+  .sidebar,.topbar,.save-strip,.button,.card-actions,.tab-bar,.file-drop,.toast-region { display:none !important; }
+  .main-column { margin:0; }
+  main { padding:0;max-width:none; }
+  body { background:white;color:black; }
+  .card,.hero { break-inside:avoid;box-shadow:none;border:1px solid #bbb;background:white;color:black; }
+  .hero p,.metric-foot,.list-item p,.section-header p { color:#444; }
+}
+
+  </style>
+</head>
+<body>
+  <noscript>Este aplicativo precisa de JavaScript habilitado.</noscript>
+
+  <div class="app-shell" id="appShell">
+    <aside class="sidebar" id="sidebar" aria-label="Navegação principal">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">N</div>
+        <div>
+          <strong>Núcleo</strong>
+          <span>Central de desenvolvimento</span>
+        </div>
+      </div>
+
+      <nav class="nav" id="mainNav">
+        <button class="nav-item active" data-page="dashboard"><span class="nav-icon">⌂</span><span>Visão geral</span></button>
+        <button class="nav-item" data-page="annual"><span class="nav-icon">◎</span><span>Direção anual</span></button>
+        <button class="nav-item" data-page="pdi"><span class="nav-icon">↗</span><span>Meu PDI</span></button>
+        <button class="nav-item" data-page="project"><span class="nav-icon">◇</span><span>Projeto</span></button>
+        <button class="nav-item" data-page="team"><span class="nav-icon">◉</span><span>Equipe</span></button>
+        <button class="nav-item" data-page="leadership"><span class="nav-icon">△</span><span>Liderança</span></button>
+        <button class="nav-item" data-page="achievements"><span class="nav-icon">★</span><span>Feitos profissionais</span></button>
+        <button class="nav-item" data-page="reviews"><span class="nav-icon">↻</span><span>Revisões</span></button>
+        <button class="nav-item" data-page="library"><span class="nav-icon">▣</span><span>Biblioteca</span></button>
+        <button class="nav-item" data-page="methods"><span class="nav-icon">≡</span><span>Métodos</span></button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="nav-item" data-page="settings"><span class="nav-icon">⚙</span><span>Configurações</span></button>
+        <div class="privacy-chip"><span></span> Dados salvos neste navegador</div>
+      </div>
+    </aside>
+
+    <div class="main-column">
+      <header class="topbar">
+        <button class="icon-button mobile-only" id="menuToggle" aria-label="Abrir menu">☰</button>
+        <div class="page-heading">
+          <p id="pageEyebrow">Central de desenvolvimento</p>
+          <h1 id="pageTitle">Visão geral</h1>
+        </div>
+        <div class="topbar-actions">
+          <div class="search-wrap">
+            <span aria-hidden="true">⌕</span>
+            <input id="globalSearch" type="search" placeholder="Buscar em toda a central" aria-label="Buscar" />
+          </div>
+          <button class="icon-button" id="themeToggle" aria-label="Alternar tema">◐</button>
+          <button class="button button-primary" id="quickAdd">+ Registrar</button>
+        </div>
+      </header>
+
+      <div class="save-strip" id="saveStrip" role="status" aria-live="polite">
+        <span class="save-dot"></span><span id="saveStatus">Tudo salvo</span>
+      </div>
+
+      <main id="mainContent" tabindex="-1"></main>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="modalBackdrop" hidden>
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <header class="modal-header">
+        <div>
+          <p class="eyebrow" id="modalEyebrow">Novo registro</p>
+          <h2 id="modalTitle">Adicionar</h2>
+        </div>
+        <button class="icon-button" id="modalClose" aria-label="Fechar">×</button>
+      </header>
+      <div class="modal-body" id="modalBody"></div>
+    </section>
+  </div>
+
+  <div class="toast-region" id="toastRegion" aria-live="polite"></div>
+
+  <script>
+(function () {
+  'use strict';
+
+  const DB_NAME = 'nucleo-central-desenvolvimento';
+  const DB_VERSION = 1;
+  const STATE_STORE = 'state';
+  const FILE_STORE = 'files';
+  let dbPromise;
+
+  function openDB() {
+    if (dbPromise) return dbPromise;
+    dbPromise = new Promise((resolve, reject) => {
+      const req = indexedDB.open(DB_NAME, DB_VERSION);
+      req.onupgradeneeded = () => {
+        const db = req.result;
+        if (!db.objectStoreNames.contains(STATE_STORE)) db.createObjectStore(STATE_STORE);
+        if (!db.objectStoreNames.contains(FILE_STORE)) {
+          const files = db.createObjectStore(FILE_STORE, { keyPath: 'id' });
+          files.createIndex('relation', 'relationKey', { unique: false });
+          files.createIndex('createdAt', 'createdAt', { unique: false });
+        }
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+    return dbPromise;
+  }
+
+  async function withStore(storeName, mode, fn) {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(storeName, mode);
+      const store = tx.objectStore(storeName);
+      let result;
+      try { result = fn(store); } catch (err) { reject(err); return; }
+      tx.oncomplete = () => resolve(result);
+      tx.onerror = () => reject(tx.error);
+      tx.onabort = () => reject(tx.error);
+    });
+  }
+
+  async function getState() {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STATE_STORE, 'readonly');
+      const req = tx.objectStore(STATE_STORE).get('app');
+      req.onsuccess = () => resolve(req.result || null);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  async function saveState(state) {
+    return withStore(STATE_STORE, 'readwrite', store => store.put(state, 'app'));
+  }
+
+  async function addFile(record) {
+    return withStore(FILE_STORE, 'readwrite', store => store.put(record));
+  }
+
+  async function getFile(id) {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(FILE_STORE, 'readonly');
+      const req = tx.objectStore(FILE_STORE).get(id);
+      req.onsuccess = () => resolve(req.result || null);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  async function getAllFiles() {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(FILE_STORE, 'readonly');
+      const req = tx.objectStore(FILE_STORE).getAll();
+      req.onsuccess = () => resolve(req.result || []);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  async function deleteFile(id) {
+    return withStore(FILE_STORE, 'readwrite', store => store.delete(id));
+  }
+
+  async function clearAll() {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction([STATE_STORE, FILE_STORE], 'readwrite');
+      tx.objectStore(STATE_STORE).clear();
+      tx.objectStore(FILE_STORE).clear();
+      tx.oncomplete = resolve;
+      tx.onerror = () => reject(tx.error);
+    });
+  }
+
+  window.NucleoStorage = { openDB, getState, saveState, addFile, getFile, getAllFiles, deleteFile, clearAll };
+})();
+
+  </script>
+  <script>
+(function () {
+  'use strict';
+
+  const Storage = window.NucleoStorage;
+  const $ = (selector, root = document) => root.querySelector(selector);
+  const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
+  const uid = (prefix = 'id') => `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+  const nowISO = () => new Date().toISOString();
+  const todayISO = () => new Date().toISOString().slice(0, 10);
+  const escapeHTML = (value = '') => String(value).replace(/[&<>'"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[ch]));
+  const nl2br = (value = '') => escapeHTML(value).replace(/\n/g, '<br>');
+  const clamp = (value, min = 0, max = 100) => Math.min(max, Math.max(min, Number(value) || 0));
+
+  const pageMeta = {
+    dashboard: ['Visão geral', 'Central de desenvolvimento'],
+    annual: ['Direção anual', 'Norte, prioridades e critérios de sucesso'],
+    pdi: ['Meu PDI', 'Competências, experiências e evidências'],
+    project: ['Desenvolvimento do projeto', 'Maturidade, OKRs, melhorias e riscos'],
+    team: ['Desenvolvimento da equipe', 'Competências, autonomia e sucessão'],
+    leadership: ['Sistema de liderança', '1:1, feedback, delegação e decisões'],
+    achievements: ['Feitos profissionais', 'Memória de impacto e portfólio'],
+    reviews: ['Revisões', 'Aprendizado mensal, trimestral e anual'],
+    library: ['Biblioteca', 'Arquivos, evidências e materiais'],
+    methods: ['Base metodológica', 'Ferramentas aplicadas sem burocracia'],
+    settings: ['Configurações', 'Perfil, segurança e portabilidade dos dados']
+  };
+
+  const maturityDimensions = [
+    ['Governança e decisões', 'Papéis, alçadas, cadência e rastreabilidade'],
+    ['Processos e padrões', 'Fluxos críticos documentados e executáveis'],
+    ['Dados e indicadores', 'Fonte, definição, leitura e uso para decisão'],
+    ['Integrações e tecnologia', 'APIs, contingência, estabilidade e monitoramento'],
+    ['Pessoas e autonomia', 'Competência, cobertura, delegação e sucessão'],
+    ['Stakeholders', 'Acordos, comunicação, prioridades e resolução'],
+    ['Melhoria contínua', 'AAR, causa raiz, backlog e prevenção de reincidência']
+  ];
+
+  const methodCards = [
+    { name: 'PDI / IDP', use: 'Transforma uma lacuna de capacidade em prática, mudança de comportamento e evidência.', steps: ['Defina o resultado', 'Escolha a competência', 'Crie experiências reais', 'Colete evidências', 'Revise o comportamento'] },
+    { name: 'Ciclo contínuo', use: 'Evita depender de uma avaliação anual sujeita a memória seletiva e viés de recência.', steps: ['Check-in mensal', 'Revisão trimestral', 'Profundidade semestral', 'Consolidação anual'] },
+    { name: 'OKR', use: 'Conecta objetivo qualitativo a resultados mensuráveis sem transformar tudo em tarefa.', steps: ['Objetivo claro', '2 a 4 resultados-chave', 'Iniciativas', 'Leitura de contexto'] },
+    { name: 'SMART', use: 'Testa a qualidade de metas e compromissos.', steps: ['Específica', 'Mensurável', 'Atingível', 'Relevante', 'Temporal'] },
+    { name: '70–20–10', use: 'Prioriza aprendizagem no trabalho, relações de desenvolvimento e conteúdo formal.', steps: ['70: desafio real', '20: feedback e mentoria', '10: formação'] },
+    { name: 'GROW', use: 'Estrutura conversas de coaching sem retirar a responsabilidade do liderado.', steps: ['Goal', 'Reality', 'Options', 'Will'] },
+    { name: 'SBI / SBII', use: 'Dá feedback sobre fatos e impacto, evitando ataques à identidade.', steps: ['Situação', 'Comportamento', 'Impacto', 'Intenção / investigação', 'Acordo'] },
+    { name: 'PDCA + AAR', use: 'Converte execução em melhoria e reduz reincidência.', steps: ['Planejar', 'Executar', 'Checar', 'Agir', 'Revisar o que ocorreu'] },
+    { name: 'RACI', use: 'Explicita quem executa, responde, é consultado e informado.', steps: ['Responsável', 'Accountable', 'Consultado', 'Informado'] },
+    { name: 'STAR / CAR', use: 'Formaliza feitos profissionais com contexto, ação, resultado e reflexão.', steps: ['Situação / Contexto', 'Tarefa / Desafio', 'Ação', 'Resultado', 'Aprendizado'] }
+  ];
+
+  function defaultState() {
+    return {
+      version: 1,
+      meta: {
+        appName: 'Núcleo',
+        userName: 'Danielle Gomes dos Santos',
+        role: 'Liderança de Operações de Ticketing',
+        projectName: 'Operações de Ticketing, Acesso, Bilheteria, SAC e Match Day',
+        cycleYear: new Date().getFullYear(),
+        theme: 'light',
+        createdAt: nowISO(),
+        updatedAt: nowISO()
+      },
+      annual: {
+        north: 'Transformar complexidade operacional em decisão, padrão, autonomia e experiência consistente.',
+        results: ['Aumentar previsibilidade e reduzir reincidência operacional', 'Ampliar autonomia segura da equipe', 'Consolidar governança, dados e memória de impacto'],
+        objectives: [
+          { id:uid('annual'), title:'Aumentar previsibilidade e reduzir reincidência operacional', indicator:'Ocorrências recorrentes e tempo de resolução', baseline:'Definir linha de base', target:'Reduzir recorrência e acelerar resolução', owner:'Danielle', due:'', status:'planejado', progress:0, capability:'Governança de ponta a ponta', system:'Rito mensal de causa, ação e validação', evidence:'Indicadores, decisões e registros de melhoria', createdAt:nowISO() },
+          { id:uid('annual'), title:'Ampliar autonomia segura da equipe', indicator:'Decisões resolvidas no nível correto', baseline:'Definir linha de base', target:'Aumentar autonomia sem ampliar risco', owner:'Danielle', due:'', status:'planejado', progress:0, capability:'Delegação e desenvolvimento de pessoas', system:'Alçadas, checklists e revisões de delegação', evidence:'Menos escalonamentos e maior cobertura', createdAt:nowISO() },
+          { id:uid('annual'), title:'Consolidar governança, dados e memória de impacto', indicator:'Decisões e resultados com evidência registrada', baseline:'Definir linha de base', target:'Formalizar resultados relevantes do ciclo', owner:'Danielle', due:'', status:'planejado', progress:0, capability:'Gestão sistêmica orientada por dados', system:'Revisão mensal e fechamento trimestral', evidence:'Relatórios, portfólio e histórico de decisões', createdAt:nowISO() }
+        ],
+        competencies: ['Comunicação executiva e influência', 'Delegação e desenvolvimento de pessoas', 'Gestão sistêmica orientada por dados'],
+        projectCapabilities: ['Governança de ponta a ponta', 'Integrações e contingência', 'Aprendizado pós-operação'],
+        teamPriorities: ['Critérios claros de autonomia', 'Trilhas por função', 'Cobertura de posições críticas'],
+        risks: '',
+        nonPriorities: '',
+        success: '',
+        nextMonthlyReview: '',
+        nextQuarterlyReview: ''
+      },
+      pdi: [
+        {
+          id: uid('pdi'), title: 'Comunicação executiva para decisão', competency: 'Influência e síntese',
+          result: 'Transformar temas complexos em mensagens claras, com impacto, evidência, recomendação e decisão necessária.',
+          behavior: 'Comunicar em até cinco linhas quando a pauta exigir decisão executiva.',
+          evidence: 'Registros de decisões aceleradas, redução de retrabalho e feedback de stakeholders.',
+          actions: 'Aplicar o formato em três situações reais; pedir feedback; revisar padrões de ruído.',
+          due: '', status: 'planejado', progress: 10, createdAt: nowISO(), starter: true
+        },
+        {
+          id: uid('pdi'), title: 'Delegação com autonomia segura', competency: 'Desenvolvimento de pessoas',
+          result: 'Reduzir dependência da líder sem aumentar risco operacional.',
+          behavior: 'Delegar resultado, limites, alçadas, riscos e critério de conclusão — não apenas tarefas.',
+          evidence: 'Decisões resolvidas no nível correto, menor escalonamento desnecessário e aumento de cobertura.',
+          actions: 'Mapear decisões; aplicar canvas de delegação; revisar após cada ciclo crítico.',
+          due: '', status: 'planejado', progress: 10, createdAt: nowISO(), starter: true
+        }
+      ],
+      project: {
+        maturity: Object.fromEntries(maturityDimensions.map(([name]) => [name, 1])),
+        okrs: [], improvements: [], risks: [], aars: []
+      },
+      team: { members: [] },
+      leadership: { oneOnOnes: [], feedbacks: [], delegations: [], decisions: [], stakeholders: [] },
+      achievements: [],
+      reviews: { monthly: [], quarterly: [], semiannual: [], annual: [] },
+      notes: { dashboard: '' },
+      fileRefs: [],
+      activity: [{ id: uid('act'), type: 'system', text: 'Central criada e pronta para personalização.', date: nowISO() }]
+    };
+  }
+
+  let state;
+  let currentPage = 'dashboard';
+  let currentTab = {};
+  let saveTimer;
+  let searchBox;
+  let fileCache = [];
+
+  async function init() {
+    try {
+      state = await Storage.getState() || defaultState();
+      state = migrateState(state);
+      fileCache = await Storage.getAllFiles();
+      applyTheme(state.meta.theme || 'light');
+      bindGlobalEvents();
+      navigate(location.hash.replace('#/', '') || 'dashboard', false);
+      if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('./sw.js').catch(() => {});
+    } catch (error) {
+      console.error(error);
+      state = defaultState();
+      renderFatal(error);
+    }
+  }
+
+  function migrateState(input) {
+    const base = defaultState();
+    return {
+      ...base,
+      ...input,
+      meta: { ...base.meta, ...(input.meta || {}) },
+      annual: { ...base.annual, ...(input.annual || {}) },
+      project: { ...base.project, ...(input.project || {}), maturity: { ...base.project.maturity, ...((input.project || {}).maturity || {}) } },
+      team: { ...base.team, ...(input.team || {}) },
+      leadership: { ...base.leadership, ...(input.leadership || {}) },
+      reviews: { ...base.reviews, ...(input.reviews || {}) },
+      notes: { ...base.notes, ...(input.notes || {}) }
+    };
+  }
+
+  function bindGlobalEvents() {
+    $('#mainNav').addEventListener('click', onNavClick);
+    $('.sidebar-footer').addEventListener('click', onNavClick);
+    $('#menuToggle').addEventListener('click', () => $('#sidebar').classList.toggle('open'));
+    $('#themeToggle').addEventListener('click', toggleTheme);
+    $('#quickAdd').addEventListener('click', openQuickCapture);
+    $('#modalClose').addEventListener('click', closeModal);
+    $('#modalBackdrop').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
+    $('#globalSearch').addEventListener('input', debounce(handleSearch, 140));
+    document.addEventListener('keydown', handleShortcuts);
+    window.addEventListener('hashchange', () => navigate(location.hash.replace('#/', '') || 'dashboard', false));
+  }
+
+  function onNavClick(event) {
+    const button = event.target.closest('[data-page]');
+    if (!button) return;
+    navigate(button.dataset.page);
+  }
+
+  function navigate(page, updateHash = true) {
+    if (!pageMeta[page]) page = 'dashboard';
+    currentPage = page;
+    if (updateHash) location.hash = `/${page}`;
+    $$('.nav-item[data-page]').forEach(btn => btn.classList.toggle('active', btn.dataset.page === page));
+    $('#sidebar').classList.remove('open');
+    const [title, eyebrow] = pageMeta[page];
+    $('#pageTitle').textContent = title;
+    $('#pageEyebrow').textContent = eyebrow;
+    renderPage();
+    $('#mainContent').focus({ preventScroll: true });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function renderPage() {
+    const renderers = {
+      dashboard: renderDashboard,
+      annual: renderAnnual,
+      pdi: renderPDI,
+      project: renderProject,
+      team: renderTeam,
+      leadership: renderLeadership,
+      achievements: renderAchievements,
+      reviews: renderReviews,
+      library: renderLibrary,
+      methods: renderMethods,
+      settings: renderSettings
+    };
+    $('#mainContent').innerHTML = renderers[currentPage]();
+    bindPageEvents(currentPage);
+  }
+
+  function bindPageEvents(page) {
+    const main = $('#mainContent');
+    main.addEventListener('click', handlePageClick);
+    main.addEventListener('change', handlePageChange);
+    main.addEventListener('input', handlePageInput);
+    if (page === 'library') setupDropZone();
+  }
+
+  function handlePageClick(event) {
+    const action = event.target.closest('[data-action]');
+    if (!action) return;
+    const { action: name, id, type, tab, page } = action.dataset;
+    if (name === 'navigate') return navigate(page);
+    if (name === 'tab') { currentTab[currentPage] = tab; return renderPage(); }
+    if (name === 'add') return openEntityModal(type);
+    if (name === 'edit') return openEntityModal(type, id);
+    if (name === 'delete') return deleteEntity(type, id);
+    if (name === 'achievement-text') return openAchievementText(id);
+    if (name === 'copy') return copyText(action.dataset.copy || '');
+    if (name === 'download-file') return downloadFile(id);
+    if (name === 'delete-file') return removeFile(id);
+    if (name === 'print') return window.print();
+    if (name === 'export-json') return exportBackup();
+    if (name === 'export-report') return exportReport();
+    if (name === 'import-json') return $('#backupFile').click();
+    if (name === 'persist') return requestPersistentStorage();
+    if (name === 'reset') return resetApp();
+    if (name === 'add-list-item') return addAnnualListItem(action.dataset.field);
+    if (name === 'remove-list-item') return removeAnnualListItem(action.dataset.field, Number(action.dataset.index));
+  }
+
+  function handlePageChange(event) {
+    const el = event.target;
+    if (el.matches('[data-maturity]')) {
+      state.project.maturity[el.dataset.maturity] = Number(el.value);
+      scheduleSave('Maturidade atualizada');
+      const score = el.closest('.maturity-row').querySelector('.score-pill');
+      score.textContent = el.value;
+    }
+    if (el.id === 'backupFile' && el.files[0]) importBackup(el.files[0]);
+    if (el.id === 'libraryFiles' && el.files.length) uploadFiles(el.files, { type: 'library', id: 'general' });
+  }
+
+  function handlePageInput(event) {
+    const el = event.target;
+    if (el.matches('[data-bind]')) {
+      setByPath(state, el.dataset.bind, el.value);
+      scheduleSave();
+    }
+    if (el.matches('[data-annual-list]')) {
+      const field = el.dataset.annualList;
+      const index = Number(el.dataset.index);
+      state.annual[field][index] = el.value;
+      scheduleSave();
+    }
+  }
+
+  function scheduleSave(message = 'Salvando alterações') {
+    $('#saveStrip').classList.add('saving');
+    $('#saveStatus').textContent = message;
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(async () => {
+      try {
+        state.meta.updatedAt = nowISO();
+        await Storage.saveState(state);
+        $('#saveStrip').classList.remove('saving');
+        $('#saveStatus').textContent = 'Tudo salvo';
+      } catch (error) {
+        console.error(error);
+        $('#saveStatus').textContent = 'Erro ao salvar';
+        toast('Não foi possível salvar', 'Confira o espaço disponível no navegador.');
+      }
+    }, 450);
+  }
+
+  function addActivity(text, type = 'update') {
+    state.activity.unshift({ id: uid('act'), type, text, date: nowISO() });
+    state.activity = state.activity.slice(0, 60);
+  }
+
+  function applyTheme(theme) {
+    document.documentElement.dataset.theme = theme === 'dark' ? 'dark' : 'light';
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', theme === 'dark' ? '#08101d' : '#0b1220');
+  }
+
+  function toggleTheme() {
+    state.meta.theme = state.meta.theme === 'dark' ? 'light' : 'dark';
+    applyTheme(state.meta.theme);
+    scheduleSave('Tema atualizado');
+  }
+
+  function renderDashboard() {
+    const pdiProgress = avg(state.pdi.map(x => x.progress));
+    const maturity = avg(Object.values(state.project.maturity)) * 20;
+    const activeOKRs = state.project.okrs.filter(x => x.status !== 'concluido').length;
+    const achievementCount = state.achievements.length;
+    const next = getNextReview();
+    const recent = state.activity.slice(0, 6);
+
+    return `<div class="page">
+      <section class="hero">
+        <div class="hero-grid">
+          <div>
+            <p class="eyebrow">${escapeHTML(state.meta.cycleYear)} · ${escapeHTML(state.meta.projectName)}</p>
+            <h2>${escapeHTML(state.annual.north || 'Defina o norte que conectará você, o projeto e a equipe.')}</h2>
+            <p>Esta central transforma desenvolvimento em decisões, experiências práticas, evidências e evolução de autonomia. O objetivo não é preencher mais documentos; é construir capacidade verificável.</p>
+            <div class="hero-actions">
+              <button class="button button-primary" data-action="navigate" data-page="annual">Revisar direção anual</button>
+              <button class="button" data-action="add" data-type="achievement">Registrar impacto</button>
+              <button class="button" data-action="print">Imprimir visão</button>
+            </div>
+          </div>
+          <div class="hero-aside">
+            <small>Próxima revisão</small>
+            <strong>${next.value}</strong>
+            <span>${next.label}</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="section grid grid-4">
+        ${metricCard('PDI em evolução', `${Math.round(pdiProgress)}%`, `${state.pdi.length} objetivos ativos`, '↗')}
+        ${metricCard('Maturidade do projeto', `${(maturity / 20).toFixed(1)}/5`, 'Média das dimensões', '◇')}
+        ${metricCard('OKRs ativos', activeOKRs, `${state.project.okrs.length} cadastrados`, '◎')}
+        ${metricCard('Feitos registrados', achievementCount, 'Evidências de impacto', '★')}
+      </section>
+
+      <section class="section grid grid-dashboard">
+        <div>
+          <div class="section-header"><div><h2>Prioridades do ciclo</h2><p>O que precisa continuar visível quando a operação ficar urgente.</p></div></div>
+          <div class="grid grid-3">
+            ${priorityCard('Resultados', state.annual.results, 'annual')}
+            ${priorityCard('Competências', state.annual.competencies, 'pdi')}
+            ${priorityCard('Equipe', state.annual.teamPriorities, 'team')}
+          </div>
+        </div>
+        <div>
+          <div class="section-header"><div><h2>Captura rápida</h2><p>Registre antes que a memória reduza o trabalho ao que foi mais recente.</p></div></div>
+          <div class="quick-capture">
+            <button data-action="add" data-type="achievement"><strong>Feito</strong><span>Resultado ou capacidade</span></button>
+            <button data-action="add" data-type="decision"><strong>Decisão</strong><span>Contexto e critério</span></button>
+            <button data-action="add" data-type="feedback"><strong>Feedback</strong><span>SBI / SBII</span></button>
+            <button data-action="add" data-type="review-monthly"><strong>Revisão</strong><span>Fechar o mês</span></button>
+          </div>
+        </div>
+      </section>
+
+      <section class="section grid grid-dashboard">
+        <div class="card">
+          <div class="card-title"><div><h3>Meu PDI</h3><p>Progresso dos objetivos ativos</p></div><button class="button button-small" data-action="navigate" data-page="pdi">Abrir PDI</button></div>
+          <div class="list">
+            ${state.pdi.length ? state.pdi.slice(0, 4).map(pdiMini).join('') : empty('Nenhum objetivo de PDI', 'Crie poucos objetivos ligados a trabalho real.', 'pdi')}
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title"><div><h3>Atividade recente</h3><p>Alterações e registros relevantes</p></div></div>
+          <div class="timeline">
+            ${recent.length ? recent.map(a => `<div class="timeline-item"><time>${formatDateTime(a.date)}</time><h4>${escapeHTML(a.text)}</h4></div>`).join('') : '<p class="metric-foot">Nenhuma atividade recente.</p>'}
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-header"><div><h2>Caderno de direção</h2><p>Use para raciocínio livre. O conteúdo é salvo automaticamente.</p></div></div>
+        <div class="card"><textarea class="textarea textarea-tall" data-bind="notes.dashboard" placeholder="O que está ocupando sua atenção? Que decisão precisa amadurecer? Que padrão você está observando?">${escapeHTML(state.notes.dashboard || '')}</textarea></div>
+      </section>
+    </div>`;
+  }
+
+  function renderAnnual() {
+    const objectives = state.annual.objectives || [];
+    const complete = objectives.filter(x => x.title && x.indicator && x.target && x.owner && x.due && x.evidence).length;
+    const avgProgress = objectives.length ? Math.round(avg(objectives.map(x => x.progress))) : 0;
+    return `<div class="page">
+      <section class="grid grid-2">
+        <div class="card card-accent">
+          <div class="card-title"><div><h3>Norte do ano</h3><p>Uma direção clara o suficiente para orientar exclusões.</p></div></div>
+          <textarea class="textarea textarea-tall" data-bind="annual.north" placeholder="Em uma frase, o que este ciclo precisa construir?">${escapeHTML(state.annual.north)}</textarea>
+        </div>
+        <div class="card">
+          <div class="card-title"><div><h3>Cadência de revisão</h3><p>Sem data, a revisão vira intenção.</p></div></div>
+          <div class="form-grid">
+            ${fieldDate('Próxima revisão mensal', 'annual.nextMonthlyReview', state.annual.nextMonthlyReview)}
+            ${fieldDate('Próxima revisão trimestral', 'annual.nextQuarterlyReview', state.annual.nextQuarterlyReview)}
+          </div>
+          <div class="callout" style="margin-top:14px"><div class="callout-icon">!</div><div><strong>Regra de foco</strong><p>No máximo três prioridades reais por trimestre e cinco por ano. Quando tudo é prioridade, a decisão foi apenas transferida para a equipe.</p></div></div>
+        </div>
+      </section>
+
+      <section class="section grid grid-3">
+        ${metricCard('Objetivos anuais', objectives.length, 'Limite recomendado: 5', '◎')}
+        ${metricCard('Completos', `${complete}/${objectives.length}`, 'Com meta, dono, prazo e evidência', '✓')}
+        ${metricCard('Progresso médio', `${avgProgress}%`, 'Atualizado nos objetivos', '↗')}
+      </section>
+
+      <section class="section">
+        <div class="section-header"><div><h2>Resultados executáveis</h2><p>Cada prioridade conecta direção, indicador, meta, responsável, sistema e evidência.</p></div><button class="button button-primary" data-action="add" data-type="annual-objective" ${objectives.length >= 5 ? 'disabled title="Limite recomendado atingido"' : ''}>+ Novo objetivo</button></div>
+        <div class="grid grid-2">${objectives.length ? objectives.map(annualObjectiveCard).join('') : empty('Nenhum objetivo anual', 'Crie até cinco resultados que realmente orientarão decisões.')}</div>
+      </section>
+
+      <section class="section grid grid-3">
+        ${editableListCard('Competências prioritárias', 'O que você precisa aprender a fazer melhor.', 'competencies', state.annual.competencies)}
+        ${editableListCard('Capacidades do projeto', 'O que precisa existir além do esforço individual.', 'projectCapabilities', state.annual.projectCapabilities)}
+        ${editableListCard('Prioridades da equipe', 'Autonomia, domínio e cobertura.', 'teamPriorities', state.annual.teamPriorities)}
+        ${largeTextCard('Riscos centrais', 'O que pode inviabilizar o ciclo?', 'annual.risks', state.annual.risks)}
+        ${largeTextCard('Não prioridades', 'O que será deliberadamente deixado fora?', 'annual.nonPriorities', state.annual.nonPriorities)}
+      </section>
+
+      <section class="section">
+        <div class="card">
+          <div class="card-title"><div><h3>Definição de sucesso</h3><p>Combine resultado, capacidade, comportamento e evidência.</p></div></div>
+          <textarea class="textarea textarea-tall" data-bind="annual.success" placeholder="Ao final do ciclo, quais fatos mostrarão que você, o projeto e a equipe evoluíram?">${escapeHTML(state.annual.success)}</textarea>
+        </div>
+      </section>
+
+      <section class="section"><div class="callout"><div class="callout-icon">↻</div><div><strong>Regra de revisão</strong><p>Atualize progresso, evidências, riscos e a próxima decisão. Um objetivo sem responsável, prazo, meta ou evidência permanece incompleto.</p></div></div></section>
+    </div>`;
+  }
+
+  function renderPDI() {
+    const average = avg(state.pdi.map(x => x.progress));
+    return `<div class="page">
+      <section class="grid grid-3">
+        ${metricCard('Objetivos', state.pdi.length, 'Recomendação: 2 a 3 por ciclo', '↗')}
+        ${metricCard('Progresso médio', `${Math.round(average)}%`, 'Não confundir progresso com atividade', '◎')}
+        ${metricCard('Com evidência', state.pdi.filter(x => (x.evidence || '').trim()).length, 'Evidência definida', '▣')}
+      </section>
+
+      <section class="section">
+        <div class="section-header">
+          <div><h2>Objetivos de desenvolvimento</h2><p>Todo objetivo deve mudar comportamento no trabalho e deixar prova.</p></div>
+          <div class="section-actions"><button class="button button-primary" data-action="add" data-type="pdi">+ Novo objetivo</button></div>
+        </div>
+        <div class="grid grid-2">
+          ${state.pdi.length ? state.pdi.map(pdiCard).join('') : empty('Seu PDI está vazio', 'Comece por uma capacidade que hoje limita seu impacto ou a autonomia da equipe.', 'pdi')}
+        </div>
+      </section>
+
+      <section class="section grid grid-2">
+        <div class="card">
+          <div class="card-title"><div><h3>Teste de qualidade</h3><p>Antes de aceitar uma meta de PDI</p></div></div>
+          ${checklist(['Está ligada a um problema real?', 'Descreve um comportamento observável?', 'Inclui uma experiência prática?', 'Tem feedback planejado?', 'Define evidência e prazo?', 'Pode ser explicada sem depender de um curso?'])}
+        </div>
+        <div class="card">
+          <div class="card-title"><div><h3>70–20–10 aplicado</h3><p>Diretriz, não fórmula rígida</p></div></div>
+          <div class="list">
+            ${simpleListItem('70 · Experiência', 'Projeto real, decisão difícil, liderança de frente, melhoria de processo ou problema novo.')}
+            ${simpleListItem('20 · Relações', 'Feedback, mentoria, observação, parceria com especialista e revisão com stakeholder.')}
+            ${simpleListItem('10 · Formação', 'Curso, leitura, ferramenta ou conteúdo aplicado a uma entrega definida.')}
+          </div>
+        </div>
+      </section>
+    </div>`;
+  }
+
+  function renderProject() {
+    const tab = currentTab.project || 'maturity';
+    const tabs = [['maturity','Maturidade'],['okrs','OKRs'],['improvements','Roadmap'],['risks','Riscos'],['aars','AAR']];
+    let content = '';
+    if (tab === 'maturity') content = renderMaturity();
+    if (tab === 'okrs') content = renderEntitySection('OKRs do projeto', 'Resultados-chave devem medir mudança, não lista de tarefas.', 'okr', state.project.okrs, okrCard);
+    if (tab === 'improvements') content = renderKanban();
+    if (tab === 'risks') content = renderEntitySection('Gestão de riscos', 'Risco sem dono, gatilho e resposta é apenas preocupação.', 'risk', state.project.risks, riskCard);
+    if (tab === 'aars') content = renderEntitySection('After Action Review', 'Separar fato de interpretação e produzir ação com dono.', 'aar', state.project.aars, aarCard);
+
+    return `<div class="page">
+      <section class="hero">
+        <div class="hero-grid"><div><p class="eyebrow">Projeto</p><h2>${escapeHTML(state.meta.projectName)}</h2><p>O projeto amadurece quando entrega com mais previsibilidade, menos dependência individual e melhor capacidade de aprender.</p></div><div class="hero-aside"><small>Maturidade média</small><strong>${avg(Object.values(state.project.maturity)).toFixed(1)}</strong><span>escala de 1 a 5</span></div></div>
+      </section>
+      <section class="section"><div class="tab-bar">${tabs.map(([id,label]) => `<button class="tab-button ${tab===id?'active':''}" data-action="tab" data-tab="${id}">${label}</button>`).join('')}</div>${content}</section>
+    </div>`;
+  }
+
+  function renderMaturity() {
+    return `<div class="grid grid-dashboard">
+      <div class="card">
+        <div class="card-title"><div><h3>Diagnóstico de maturidade</h3><p>1 = dependente de esforço individual · 5 = sistema estável, mensurado e melhorado</p></div></div>
+        ${maturityDimensions.map(([name,desc]) => {
+          const value = state.project.maturity[name] || 1;
+          return `<div class="maturity-row"><div><h4>${escapeHTML(name)}</h4><p>${escapeHTML(desc)}</p></div><div class="range-wrap"><input class="input" type="range" min="1" max="5" step="1" value="${value}" data-maturity="${escapeHTML(name)}"></div><div class="score-pill">${value}</div></div>`;
+        }).join('')}
+      </div>
+      <div class="grid">
+        <div class="card card-accent"><div class="card-title"><div><h3>Leitura crítica</h3><p>Média alta pode esconder gargalo crítico</p></div></div><p class="metric-foot">Priorize a dimensão que limita o sistema, não a mais fácil de melhorar. Uma integração instável ou uma alçada indefinida pode anular avanços em treinamento e documentação.</p></div>
+        <div class="card"><div class="card-title"><div><h3>Escala de maturidade</h3></div></div><div class="list">
+          ${simpleListItem('1 · Reativo', 'Conhecimento disperso, decisão centralizada, crise tratada caso a caso.')}
+          ${simpleListItem('2 · Repetível', 'Alguns padrões existem, mas dependem de pessoas-chave.')}
+          ${simpleListItem('3 · Definido', 'Processos, papéis e critérios são conhecidos e usados.')}
+          ${simpleListItem('4 · Gerenciado', 'Indicadores, riscos e aprendizagem orientam decisão.')}
+          ${simpleListItem('5 · Adaptativo', 'O sistema antecipa, aprende e escala sem perder controle.')}
+        </div></div>
+      </div>
+    </div>`;
+  }
+
+  function renderKanban() {
+    const columns = [['planejado','Planejado'],['andamento','Em andamento'],['atencao','Em atenção'],['concluido','Concluído']];
+    return `<div class="section-header"><div><h2>Portfólio de melhorias</h2><p>Visualize prioridade, dono, impacto e evidência de conclusão.</p></div><button class="button button-primary" data-action="add" data-type="improvement">+ Nova melhoria</button></div>
+      <div class="kanban">${columns.map(([status,label]) => {
+        const items = state.project.improvements.filter(x => x.status === status);
+        return `<div class="kanban-column"><div class="kanban-header"><strong>${label}</strong><span class="kanban-count">${items.length}</span></div>${items.map(x => `<div class="kanban-card" data-action="edit" data-type="improvement" data-id="${x.id}"><h4>${escapeHTML(x.title)}</h4><p>${escapeHTML(x.impact || 'Impacto não definido')}</p><div class="list-meta"><span>${escapeHTML(x.owner || 'Sem dono')}</span><span>${formatDate(x.due)}</span></div></div>`).join('') || '<div class="empty-state"><p>Nenhum item.</p></div>'}</div>`;
+      }).join('')}</div>`;
+  }
+
+  function renderTeam() {
+    const readiness = state.team.members.filter(x => x.readiness === 'pronto').length;
+    const backups = state.team.members.filter(x => x.backupFor).length;
+    return `<div class="page">
+      <section class="grid grid-3">
+        ${metricCard('Pessoas mapeadas', state.team.members.length, 'Competência e autonomia', '◉')}
+        ${metricCard('Prontas para ampliar', readiness, 'Prontidão baseada em evidência', '↗')}
+        ${metricCard('Coberturas críticas', backups, 'Backups registrados', '◇')}
+      </section>
+      <section class="section">
+        <div class="section-header"><div><h2>Mapa da equipe</h2><p>Evite rótulos permanentes. Registre domínio atual, prontidão, apoio e próxima experiência.</p></div><button class="button button-primary" data-action="add" data-type="member">+ Adicionar pessoa</button></div>
+        <div class="grid grid-3">${state.team.members.length ? state.team.members.map(memberCard).join('') : empty('Nenhuma pessoa cadastrada', 'Adicione integrantes apenas quando houver um uso legítimo e acesso protegido. Evite dados sensíveis.', 'member')}</div>
+      </section>
+      <section class="section grid grid-2">
+        <div class="card"><div class="card-title"><div><h3>Níveis de autonomia</h3><p>O mesmo estilo de liderança não serve para todas as tarefas.</p></div></div><div class="list">
+          ${simpleListItem('N1 · Executa com orientação', 'Precisa de passo a passo, acompanhamento próximo e validação.')}
+          ${simpleListItem('N2 · Executa e sinaliza', 'Segue padrão, identifica desvio e escala dentro de critérios.')}
+          ${simpleListItem('N3 · Decide dentro de limites', 'Escolhe resposta local e presta contas com evidência.')}
+          ${simpleListItem('N4 · Melhora e desenvolve', 'Redesenha padrão, antecipa risco e ensina outras pessoas.')}
+        </div></div>
+        <div class="card"><div class="card-title"><div><h3>Vieses a controlar</h3><p>Desenvolvimento de pessoas exige critérios observáveis.</p></div></div>${checklist(['Afinidade não é potencial', 'Visibilidade não é impacto', 'Autoconfiança não é domínio', 'Erro isolado não define a pessoa', 'Disponibilidade não substitui prontidão', 'Boa postura precisa virar comportamento verificável'])}</div>
+      </section>
+    </div>`;
+  }
+
+  function renderLeadership() {
+    const tab = currentTab.leadership || 'oneOnOnes';
+    const tabs = [['oneOnOnes','1:1'],['feedbacks','Feedback'],['delegations','Delegação'],['decisions','Decisões'],['stakeholders','Stakeholders']];
+    const configs = {
+      oneOnOnes: ['Reuniões 1:1', 'Desenvolvimento, contexto, feedback e decisões que exigem conversa.', 'oneOnOne', state.leadership.oneOnOnes, oneOnOneCard],
+      feedbacks: ['Feedbacks registrados', 'Comportamento e impacto, não personalidade ou intenção presumida.', 'feedback', state.leadership.feedbacks, feedbackCard],
+      delegations: ['Canvas de delegação', 'Contexto, limites, suporte, riscos e critério de conclusão.', 'delegation', state.leadership.delegations, delegationCard],
+      decisions: ['Diário de decisões', 'Criar memória do raciocínio e melhorar critérios.', 'decision', state.leadership.decisions, decisionCard],
+      stakeholders: ['Mapa de stakeholders', 'Interesses, poder, dependências e estratégia de relação.', 'stakeholder', state.leadership.stakeholders, stakeholderCard]
+    };
+    const [title, desc, type, items, renderer] = configs[tab];
+    return `<div class="page">
+      <section class="grid grid-3">
+        ${principleCard('Clareza antes de cobrança', 'Resultado, padrão, limite de decisão e evidência precisam ser conhecidos.')}
+        ${principleCard('Segurança com responsabilidade', 'Problemas devem aparecer cedo; falha não pode ser escondida nem normalizada.')}
+        ${principleCard('Liderar é tornar o sistema capaz', 'Indispensabilidade pode parecer valor, mas frequentemente é um gargalo.')}
+      </section>
+      <section class="section"><div class="tab-bar">${tabs.map(([id,label]) => `<button class="tab-button ${tab===id?'active':''}" data-action="tab" data-tab="${id}">${label}</button>`).join('')}</div>${renderEntitySection(title, desc, type, items, renderer)}</section>
+    </div>`;
+  }
+
+  function renderAchievements() {
+    const categories = countBy(state.achievements, 'category');
+    return `<div class="page">
+      <section class="hero"><div class="hero-grid"><div><p class="eyebrow">Portfólio de impacto</p><h2>Trabalho relevante que não foi registrado tende a desaparecer da avaliação.</h2><p>Registre resultado, capacidade construída, risco reduzido, influência, liderança e aprendizado. Diferencie claramente o que você liderou, coordenou, propôs, influenciou, executou, apoiou ou participou.</p></div><div class="hero-aside"><small>Total de registros</small><strong>${state.achievements.length}</strong><span>${Object.keys(categories).length} categorias usadas</span></div></div></section>
+      <section class="section">
+        <div class="section-header"><div><h2>Registros de impacto</h2><p>Converta o mesmo feito para avaliação, promoção, currículo, LinkedIn e entrevista.</p></div><button class="button button-primary" data-action="add" data-type="achievement">+ Registrar feito</button></div>
+        <div class="grid grid-2">${state.achievements.length ? state.achievements.map(achievementCard).join('') : empty('Nenhum feito registrado', 'Comece por uma entrega recente que mudou resultado, capacidade, risco, influência ou autonomia.', 'achievement')}</div>
+      </section>
+      <section class="section grid grid-3">
+        ${principleCard('Resultado', 'Indicador, prazo, qualidade, experiência, custo ou capacidade melhorada.')}
+        ${principleCard('Risco reduzido', 'Falha evitada, contingência, controle, antecipação ou decisão acelerada.')}
+        ${principleCard('Capacidade construída', 'Processo, playbook, dashboard, integração, padrão, treinamento ou sucessor.')}
+      </section>
+    </div>`;
+  }
+
+  function renderReviews() {
+    const tab = currentTab.reviews || 'monthly';
+    const tabs = [['monthly','Mensal'],['quarterly','Trimestral'],['semiannual','Semestral'],['annual','Anual']];
+    const names = { monthly:'Revisões mensais',quarterly:'Revisões trimestrais',semiannual:'Revisões semestrais',annual:'Fechamentos anuais' };
+    const descriptions = {
+      monthly:'O que avançou, bloqueios, aprendizados e próximo compromisso.',
+      quarterly:'Resultado, capacidade construída, prioridade encerrada e decisão para o próximo ciclo.',
+      semiannual:'Evolução de escopo, autonomia, competências e prontidão.',
+      annual:'Resumo executivo, resultados, capacidades, liderança, riscos, aprendizados e próximo nível.'
+    };
+    const items = state.reviews[tab];
+    return `<div class="page">
+      <section class="grid grid-4">
+        ${metricCard('Mensais', state.reviews.monthly.length, 'Execução e bloqueios', '↻')}
+        ${metricCard('Trimestrais', state.reviews.quarterly.length, 'Repriorização', '◎')}
+        ${metricCard('Semestrais', state.reviews.semiannual.length, 'Escopo e carreira', '↗')}
+        ${metricCard('Anuais', state.reviews.annual.length, 'Consolidação', '★')}
+      </section>
+      <section class="section"><div class="tab-bar">${tabs.map(([id,label]) => `<button class="tab-button ${tab===id?'active':''}" data-action="tab" data-tab="${id}">${label}</button>`).join('')}</div>
+      ${renderEntitySection(names[tab], descriptions[tab], `review-${tab}`, items, reviewCard)}</section>
+    </div>`;
+  }
+
+  function renderLibrary() {
+    const totalSize = fileCache.reduce((sum, x) => sum + (x.size || 0), 0);
+    return `<div class="page">
+      <section class="grid grid-3">
+        ${metricCard('Arquivos', fileCache.length, 'Salvos no navegador atual', '▣')}
+        ${metricCard('Espaço usado', formatBytes(totalSize), 'Quota varia por navegador', '◇')}
+        ${metricCard('Backup', 'Manual', 'Exporte periodicamente', '↻')}
+      </section>
+      <section class="section">
+        <label class="file-drop" id="fileDrop"><input id="libraryFiles" type="file" multiple hidden><strong>Solte arquivos aqui ou clique para selecionar</strong><p>PDF, planilhas, apresentações, imagens e evidências. Limite recomendado: 25 MB por arquivo.</p></label>
+      </section>
+      <section class="section"><div class="section-header"><div><h2>Arquivos e evidências</h2><p>Arquivos não são enviados ao GitHub nem a um servidor. Permanecem neste navegador.</p></div></div>
+        <div class="file-grid">${fileCache.length ? fileCache.sort((a,b)=>b.createdAt.localeCompare(a.createdAt)).map(fileCard).join('') : empty('Biblioteca vazia', 'Adicione evidências e materiais. Faça backup para não depender de um único navegador.', 'library')}</div>
+      </section>
+    </div>`;
+  }
+
+  function renderMethods() {
+    return `<div class="page">
+      <section class="hero"><div><p class="eyebrow">Base metodológica</p><h2>Nenhum método resolve tudo. Cada ferramenta deve ser usada apenas onde é mais forte.</h2><p>O desenho evita a colcha de retalhos: metas conectam resultado, capacidade, sistema e evidência; as revisões mantêm o ciclo vivo; os registros transformam execução em memória de impacto.</p></div></section>
+      <section class="section grid grid-3">${methodCards.map((m,i)=>`<article class="card method-card"><div class="method-number">${String(i+1).padStart(2,'0')}</div><h3>${escapeHTML(m.name)}</h3><p>${escapeHTML(m.use)}</p><ul>${m.steps.map(s=>`<li>${escapeHTML(s)}</li>`).join('')}</ul></article>`).join('')}</section>
+      <section class="section grid grid-2">
+        <div class="card"><div class="card-title"><div><h3>Práticas descartadas como regra</h3><p>Porque parecem gestão, mas frequentemente pioram a decisão.</p></div></div>${checklist(['Avaliação apenas anual', 'PDI reduzido a cursos', 'Ranking forçado de pessoas', 'Muitos KPIs sem leitura de contexto', 'Potencial como opinião subjetiva', 'Delegação por descarte'])}</div>
+        <div class="card"><div class="card-title"><div><h3>Critérios de saúde do sistema</h3></div></div>${checklist(['Objetivos são usados para priorizar', 'Ações acontecem no trabalho real', 'Feedback produz acordo e revisão', 'Equipe sabe o que pode decidir', 'Relatórios geram dono e prazo', 'Feitos têm evidência', 'O sistema permanece simples e usado'])}</div>
+      </section>
+    </div>`;
+  }
+
+  function renderSettings() {
+    return `<div class="page">
+      <section class="grid grid-2">
+        <div class="card"><div class="card-title"><div><h3>Perfil da central</h3><p>Esses dados aparecem na visão geral e nos relatórios.</p></div></div><div class="form-grid">
+          ${fieldInput('Seu nome','meta.userName',state.meta.userName)}
+          ${fieldInput('Função','meta.role',state.meta.role)}
+          ${fieldInput('Projeto','meta.projectName',state.meta.projectName,true)}
+          ${fieldInput('Ano do ciclo','meta.cycleYear',state.meta.cycleYear)}
+        </div></div>
+        <div class="card card-accent"><div class="card-title"><div><h3>Privacidade e limite técnico</h3><p>GitHub Pages é um site estático.</p></div></div><p class="metric-foot">Textos e arquivos são guardados localmente neste navegador por IndexedDB. Eles não sincronizam automaticamente entre dispositivos, pessoas ou navegadores. Para uso multiusuário, login e sincronização, será necessário conectar um backend, como Supabase ou Firebase.</p><div class="callout" style="margin-top:14px"><div class="callout-icon">!</div><div><strong>Não publique dados confidenciais no repositório</strong><p>O código pode ser público. Avaliações nominais, contratos, credenciais e evidências sensíveis não devem ser incluídos nos arquivos do GitHub.</p></div></div></div>
+      </section>
+
+      <section class="section grid grid-3">
+        <div class="card"><div class="card-title"><div><h3>Backup completo</h3><p>Inclui textos e arquivos em um JSON portátil.</p></div></div><button class="button button-primary" data-action="export-json">Exportar backup</button><input id="backupFile" type="file" accept="application/json,.json" hidden><button class="button" style="margin-left:6px" data-action="import-json">Importar backup</button></div>
+        <div class="card"><div class="card-title"><div><h3>Relatório HTML</h3><p>Gera uma versão estática para arquivar ou imprimir.</p></div></div><button class="button" data-action="export-report">Gerar relatório</button></div>
+        <div class="card"><div class="card-title"><div><h3>Armazenamento persistente</h3><p>Solicita ao navegador menor risco de limpeza automática.</p></div></div><button class="button" data-action="persist">Proteger armazenamento</button></div>
+      </section>
+
+      <section class="section"><div class="card"><div class="card-title"><div><h3>Zona de risco</h3><p>Exclui todos os textos, registros e arquivos deste navegador.</p></div></div><button class="button button-danger" data-action="reset">Apagar todos os dados</button></div></section>
+    </div>`;
+  }
+
+  function metricCard(label, value, foot, icon) {
+    return `<article class="card metric"><span class="metric-icon">${icon}</span><div class="metric-label">${escapeHTML(label)}</div><div class="metric-value">${escapeHTML(value)}</div><div class="metric-foot">${escapeHTML(foot)}</div></article>`;
+  }
+
+  function priorityCard(title, items, page) {
+    return `<article class="card"><div class="card-title"><div><h3>${escapeHTML(title)}</h3></div><button class="button button-small" data-action="navigate" data-page="${page}">Editar</button></div><div class="list">${(items || []).slice(0,3).map((x,i)=>simpleListItem(`${i+1}`,x)).join('')}</div></article>`;
+  }
+
+  function architectureCard(num,title,question) { return `<article class="card"><span class="status status-andamento">${num}</span><h3 style="margin:11px 0 4px;font-size:15px">${title}</h3><p class="metric-foot">${question}</p></article>`; }
+  function annualObjectiveCard(item) {
+    const missing = [['indicador',item.indicator],['meta',item.target],['responsável',item.owner],['prazo',item.due],['evidência',item.evidence]].filter(([,value])=>!String(value||'').trim()).map(([label])=>label);
+    return `<article class="card">
+      <div class="card-title"><div><h3>${escapeHTML(item.title || 'Objetivo sem título')}</h3><p>${escapeHTML(item.owner || 'Sem responsável')} · ${formatDate(item.due)}</p></div><div class="card-actions"><button data-action="edit" data-type="annual-objective" data-id="${item.id}" aria-label="Editar objetivo anual">✎</button><button data-action="delete" data-type="annual-objective" data-id="${item.id}" aria-label="Excluir objetivo anual">×</button></div></div>
+      <span class="status status-${item.status || 'planejado'}">${statusLabel(item.status)}</span>
+      ${missing.length ? `<span class="status status-atencao" style="margin-left:5px">Falta: ${escapeHTML(missing.join(', '))}</span>` : '<span class="status status-concluido" style="margin-left:5px">Estrutura completa</span>'}
+      <div class="progress-row" style="margin:14px 0 10px"><div class="progress"><span style="width:${clamp(item.progress)}%"></span></div><strong>${clamp(item.progress)}%</strong></div>
+      <div class="list"><div class="list-item"><div class="list-item-main"><h4>Indicador e meta</h4><p>${escapeHTML(item.indicator || 'Indicador não definido')} · ${escapeHTML(item.baseline || 'Sem linha de base')} → ${escapeHTML(item.target || 'Meta não definida')}</p></div></div><div class="list-item"><div class="list-item-main"><h4>Capacidade e sistema</h4><p>${escapeHTML(item.capability || 'Capacidade não definida')} · ${escapeHTML(item.system || 'Sistema de sustentação não definido')}</p></div></div><div class="list-item"><div class="list-item-main"><h4>Evidência</h4><p>${escapeHTML(item.evidence || 'Evidência não definida')}</p></div></div></div>
+    </article>`;
+  }
+  function principleCard(title, text) { return `<article class="card"><h3 style="margin:0 0 6px;font-size:14px">${escapeHTML(title)}</h3><p class="metric-foot">${escapeHTML(text)}</p></article>`; }
+  function simpleListItem(title, text) { return `<div class="list-item"><div class="list-item-main"><h4>${escapeHTML(title)}</h4><p>${escapeHTML(text || '')}</p></div></div>`; }
+  function checklist(items) { return `<div class="list">${items.map(x=>`<div class="list-item"><span style="color:var(--success);font-weight:900">✓</span><div class="list-item-main"><p style="color:var(--text)">${escapeHTML(x)}</p></div></div>`).join('')}</div>`; }
+  function empty(title, text) { return `<div class="empty-state"><strong>${escapeHTML(title)}</strong><p>${escapeHTML(text)}</p></div>`; }
+  function fieldInput(label,path,value,full=false) { return `<div class="field ${full?'field-full':''}"><label>${escapeHTML(label)}</label><input class="input" data-bind="${path}" value="${escapeHTML(value ?? '')}"></div>`; }
+  function fieldDate(label,path,value) { return `<div class="field"><label>${escapeHTML(label)}</label><input class="input" type="date" data-bind="${path}" value="${escapeHTML(value || '')}"></div>`; }
+  function largeTextCard(title,desc,path,value) { return `<div class="card"><div class="card-title"><div><h3>${title}</h3><p>${desc}</p></div></div><textarea class="textarea" data-bind="${path}">${escapeHTML(value || '')}</textarea></div>`; }
+
+  function editableListCard(title, desc, field, items) {
+    return `<div class="card"><div class="card-title"><div><h3>${title}</h3><p>${desc}</p></div><button class="button button-small" data-action="add-list-item" data-field="${field}">+</button></div><div class="list">${items.map((item,index)=>`<div class="list-item"><span class="avatar">${index+1}</span><div class="list-item-main"><textarea class="textarea" style="min-height:62px" data-annual-list="${field}" data-index="${index}">${escapeHTML(item)}</textarea></div><button class="icon-button" style="width:32px;height:32px" data-action="remove-list-item" data-field="${field}" data-index="${index}">×</button></div>`).join('')}</div></div>`;
+  }
+
+  function pdiMini(item) {
+    return `<div class="list-item"><div class="list-item-main"><h4>${escapeHTML(item.title)}</h4><div class="progress-row" style="margin-top:9px"><div class="progress"><span style="width:${clamp(item.progress)}%"></span></div><strong>${clamp(item.progress)}%</strong></div></div><span class="status status-${item.status}">${statusLabel(item.status)}</span></div>`;
+  }
+
+  function pdiCard(item) {
+    return `<article class="card">
+      <div class="card-title"><div><h3>${escapeHTML(item.title)}</h3><p>${escapeHTML(item.competency || 'Competência não definida')}</p></div><div class="card-actions"><button data-action="edit" data-type="pdi" data-id="${item.id}" title="Editar">✎</button><button data-action="delete" data-type="pdi" data-id="${item.id}" title="Excluir">×</button></div></div>
+      <span class="status status-${item.status}">${statusLabel(item.status)}</span>
+      <p class="metric-foot" style="margin:13px 0">${escapeHTML(item.result || '')}</p>
+      <div class="progress-row"><div class="progress"><span style="width:${clamp(item.progress)}%"></span></div><strong>${clamp(item.progress)}%</strong></div>
+      <div class="list-meta"><span>Prazo: ${formatDate(item.due)}</span><span>${item.starter ? 'Rascunho inicial' : 'Objetivo personalizado'}</span></div>
+    </article>`;
+  }
+
+  function okrCard(item) {
+    return `<article class="card"><div class="card-title"><div><h3>${escapeHTML(item.title)}</h3><p>${escapeHTML(item.owner || 'Sem dono')}</p></div><div class="card-actions"><button data-action="edit" data-type="okr" data-id="${item.id}">✎</button><button data-action="delete" data-type="okr" data-id="${item.id}">×</button></div></div><span class="status status-${item.status}">${statusLabel(item.status)}</span><p class="metric-foot" style="margin:12px 0">${escapeHTML(item.objective || '')}</p><div class="progress-row"><div class="progress"><span style="width:${clamp(item.progress)}%"></span></div><strong>${clamp(item.progress)}%</strong></div><div class="list-meta"><span>KR: ${escapeHTML(item.keyResults || 'não definido')}</span></div></article>`;
+  }
+  function riskCard(item) { return `<article class="card"><div class="card-title"><div><h3>${escapeHTML(item.title)}</h3><p>${escapeHTML(item.category || 'Risco do projeto')}</p></div><div class="card-actions"><button data-action="edit" data-type="risk" data-id="${item.id}">✎</button><button data-action="delete" data-type="risk" data-id="${item.id}">×</button></div></div><span class="status status-${item.status}">${statusLabel(item.status)}</span><p class="metric-foot" style="margin:12px 0">${escapeHTML(item.impact || '')}</p><div class="list-meta"><span>Probabilidade: ${escapeHTML(item.probability || '—')}</span><span>Dono: ${escapeHTML(item.owner || '—')}</span><span>Resposta: ${escapeHTML(item.response || '—')}</span></div></article>`; }
+  function aarCard(item) { return `<article class="card"><div class="card-title"><div><h3>${escapeHTML(item.title)}</h3><p>${formatDate(item.date)}</p></div><div class="card-actions"><button data-action="edit" data-type="aar" data-id="${item.id}">✎</button><button data-action="delete" data-type="aar" data-id="${item.id}">×</button></div></div><p class="metric-foot"><strong>Esperado:</strong> ${escapeHTML(item.expected || '')}</p><p class="metric-foot"><strong>Ocorreu:</strong> ${escapeHTML(item.actual || '')}</p><p class="metric-foot"><strong>Ação:</strong> ${escapeHTML(item.action || '')}</p></article>`; }
+
+  function memberCard(item) {
+    return `<article class="card"><div class="card-title"><div style="display:flex;gap:10px"><span class="avatar">${initials(item.name)}</span><div><h3>${escapeHTML(item.name)}</h3><p>${escapeHTML(item.role || '')}</p></div></div><div class="card-actions"><button data-action="edit" data-type="member" data-id="${item.id}">✎</button><button data-action="delete" data-type="member" data-id="${item.id}">×</button></div></div><div class="list-meta"><span>Autonomia: ${escapeHTML(item.autonomy || '—')}</span><span>Prontidão: ${escapeHTML(item.readiness || '—')}</span></div><p class="metric-foot" style="margin:12px 0 0"><strong>Próxima experiência:</strong> ${escapeHTML(item.nextExperience || 'não definida')}</p><div class="progress-row" style="margin-top:12px"><div class="progress"><span style="width:${clamp(item.progress)}%"></span></div><strong>${clamp(item.progress)}%</strong></div></article>`;
+  }
+
+  function oneOnOneCard(item) { return genericRecordCard(item, item.person, formatDate(item.date), item.commitment); }
+  function feedbackCard(item) { return genericRecordCard(item, item.person, `${item.type || 'Feedback'} · ${formatDate(item.date)}`, item.impact); }
+  function delegationCard(item) { return genericRecordCard(item, item.title, item.owner, item.result); }
+  function decisionCard(item) { return genericRecordCard(item, item.title, formatDate(item.date), item.criterion); }
+  function stakeholderCard(item) { return genericRecordCard(item, item.name, `Influência: ${item.influence || '—'}`, item.strategy); }
+  function reviewCard(item) { return genericRecordCard(item, item.title || formatDate(item.date), formatDate(item.date), item.nextDecision || item.summary); }
+  function genericRecordCard(item, title, subtitle, text) { return `<article class="card"><div class="card-title"><div><h3>${escapeHTML(title || 'Registro')}</h3><p>${escapeHTML(subtitle || '')}</p></div><div class="card-actions"><button data-action="edit" data-type="${entityTypeFor(item)}" data-id="${item.id}">✎</button><button data-action="delete" data-type="${entityTypeFor(item)}" data-id="${item.id}">×</button></div></div><p class="metric-foot">${escapeHTML(text || '')}</p></article>`; }
+
+  function achievementCard(item) {
+    return `<article class="card"><div class="card-title"><div><h3>${escapeHTML(item.title)}</h3><p>${escapeHTML(item.category || '')} · ${formatDate(item.date)}</p></div><div class="card-actions"><button data-action="achievement-text" data-id="${item.id}" title="Gerar versões">↗</button><button data-action="edit" data-type="achievement" data-id="${item.id}">✎</button><button data-action="delete" data-type="achievement" data-id="${item.id}">×</button></div></div><p class="metric-foot"><strong>${escapeHTML(item.roleVerb || 'Atuei')}</strong> — ${escapeHTML(item.action || '')}</p><div class="callout" style="margin-top:12px"><div class="callout-icon">★</div><div><strong>Resultado</strong><p>${escapeHTML(item.quantitative || item.qualitative || 'Resultado ainda não registrado.')}</p></div></div>${item.evidence ? `<div class="list-meta"><span>Evidência: ${escapeHTML(item.evidence)}</span></div>` : ''}</article>`;
+  }
+
+  function fileCard(file) {
+    const ext = (file.name.split('.').pop() || 'ARQ').toUpperCase().slice(0,4);
+    return `<article class="card file-card"><div class="file-card-row"><div class="file-type">${escapeHTML(ext)}</div><div class="list-item-main"><h4>${escapeHTML(file.name)}</h4><p>${formatBytes(file.size)} · ${formatDateTime(file.createdAt)}</p><div class="card-actions" style="margin-top:9px"><button data-action="download-file" data-id="${file.id}" title="Baixar">↓</button><button data-action="delete-file" data-id="${file.id}" title="Excluir">×</button></div></div></div></article>`;
+  }
+
+  function renderEntitySection(title, description, type, items, renderer) {
+    return `<div class="section-header"><div><h2>${title}</h2><p>${description}</p></div><button class="button button-primary" data-action="add" data-type="${type}">+ Novo registro</button></div><div class="grid grid-2">${items.length ? items.map(renderer).join('') : empty('Nenhum registro', 'Crie o primeiro item para transformar intenção em acompanhamento.', type)}</div>`;
+  }
+
+  function openQuickCapture() {
+    const html = `<div class="quick-capture">
+      <button data-quick="achievement"><strong>Feito profissional</strong><span>Resultado e evidência</span></button>
+      <button data-quick="decision"><strong>Decisão</strong><span>Contexto e critério</span></button>
+      <button data-quick="feedback"><strong>Feedback</strong><span>SBI / SBII</span></button>
+      <button data-quick="review-monthly"><strong>Revisão mensal</strong><span>Avanços e bloqueios</span></button>
+    </div>`;
+    openModal('Captura rápida', 'Escolha um registro', html);
+    $$('[data-quick]', $('#modalBody')).forEach(btn => btn.addEventListener('click', () => openEntityModal(btn.dataset.quick)));
+  }
+
+  const entityConfig = {
+    'annual-objective': { title:'Objetivo anual', path:'annual.objectives', fields:[
+      f('title','Resultado prioritário','text',true), f('indicator','Indicador'), f('baseline','Linha de base'), f('target','Meta'),
+      f('owner','Responsável'), f('due','Prazo','date'), f('status','Status','select',false,statusOptions()), f('progress','Progresso (%)','number'),
+      f('capability','Capacidade necessária','textarea',true), f('system','Rito, processo ou ferramenta que sustenta a mudança','textarea',true), f('evidence','Evidência e fonte de verificação','textarea',true), f('nextDecision','Próxima decisão','textarea',true) ] },
+    pdi: { title:'Objetivo de PDI', path:'pdi', fields:[
+      f('title','Título do objetivo','text',true), f('competency','Competência'), f('status','Status','select',false,statusOptions()), f('progress','Progresso (%)','number'),
+      f('result','Resultado esperado','textarea',true), f('behavior','Comportamento observável','textarea',true), f('evidence','Evidência de evolução','textarea',true), f('actions','Experiências e ações 70–20–10','textarea',true), f('due','Prazo','date') ] },
+    okr: { title:'OKR do projeto', path:'project.okrs', fields:[f('title','Nome do OKR','text',true),f('objective','Objetivo qualitativo','textarea',true),f('keyResults','Resultados-chave','textarea',true),f('owner','Dono'),f('status','Status','select',false,statusOptions()),f('progress','Progresso (%)','number'),f('due','Prazo','date')] },
+    improvement: { title:'Melhoria do roadmap', path:'project.improvements', fields:[f('title','Melhoria','text',true),f('problem','Problema que resolve','textarea',true),f('impact','Impacto esperado','textarea',true),f('owner','Dono'),f('status','Status','select',false,statusOptions()),f('priority','Prioridade','select',false,[['alta','Alta'],['media','Média'],['baixa','Baixa']]),f('due','Prazo','date'),f('evidence','Critério de conclusão','textarea',true)] },
+    risk: { title:'Risco do projeto', path:'project.risks', fields:[f('title','Risco','text',true),f('category','Categoria'),f('probability','Probabilidade','select',false,[['baixa','Baixa'],['media','Média'],['alta','Alta']]),f('impact','Impacto','textarea',true),f('trigger','Gatilho / sinal','textarea',true),f('response','Resposta planejada','textarea',true),f('owner','Dono'),f('status','Status','select',false,statusOptions())] },
+    aar: { title:'After Action Review', path:'project.aars', fields:[f('title','Operação / evento','text',true),f('date','Data','date'),f('expected','O que era esperado?','textarea',true),f('actual','O que ocorreu de fato?','textarea',true),f('why','Por que houve diferença?','textarea',true),f('keep','O que manter?','textarea',true),f('change','O que mudar?','textarea',true),f('action','Ação, dono e prazo','textarea',true)] },
+    member: { title:'Pessoa da equipe', path:'team.members', fields:[f('name','Nome','text',true),f('role','Função'),f('autonomy','Autonomia','select',false,[['N1','N1 · Executa com orientação'],['N2','N2 · Executa e sinaliza'],['N3','N3 · Decide dentro de limites'],['N4','N4 · Melhora e desenvolve']]),f('readiness','Prontidão','select',false,[['em-desenvolvimento','Em desenvolvimento'],['pronto','Pronto para ampliar'],['consolidando','Consolidando função'],['reavaliar','Reavaliar contexto']]),f('progress','Progresso do PDI (%)','number'),f('strengths','Forças observáveis','textarea',true),f('gaps','Lacunas relevantes','textarea',true),f('nextExperience','Próxima experiência','textarea',true),f('feedbackNeeded','Feedback necessário','textarea',true),f('backupFor','Cobertura / sucessão para')] },
+    oneOnOne: { title:'Reunião 1:1', path:'leadership.oneOnOnes', kind:'oneOnOne', fields:[f('person','Pessoa'),f('date','Data','date'),f('context','Contexto e energia','textarea',true),f('progress','Avanços e entregas','textarea',true),f('blocks','Bloqueios e apoio','textarea',true),f('development','Desenvolvimento e feedback','textarea',true),f('commitment','Compromisso até a próxima conversa','textarea',true)] },
+    feedback: { title:'Feedback SBI / SBII', path:'leadership.feedbacks', fields:[f('person','Pessoa'),f('date','Data','date'),f('type','Tipo','select',false,[['positivo','Positivo'],['corretivo','Corretivo'],['desenvolvimento','Desenvolvimento']]),f('situation','Situação específica','textarea',true),f('behavior','Comportamento observado','textarea',true),f('impact','Impacto gerado','textarea',true),f('intent','Perspectiva / intenção investigada','textarea',true),f('agreement','Acordo e revisão','textarea',true)] },
+    delegation: { title:'Canvas de delegação', path:'leadership.delegations', fields:[f('title','Resultado delegado','text',true),f('owner','Responsável'),f('result','Resultado esperado','textarea',true),f('why','Por que importa','textarea',true),f('scope','Escopo e entregas','textarea',true),f('canDecide','Decisões autônomas','textarea',true),f('validate','Decisões que exigem validação','textarea',true),f('escalate','Riscos para escalonamento imediato','textarea',true),f('review','Rito e data de revisão','textarea',true),f('evidence','Critério de conclusão','textarea',true)] },
+    decision: { title:'Diário de decisão', path:'leadership.decisions', fields:[f('title','Decisão','text',true),f('date','Data','date'),f('context','Contexto','textarea',true),f('options','Opções consideradas','textarea',true),f('criterion','Critério usado','textarea',true),f('risk','Risco assumido','textarea',true),f('result','Resultado observado','textarea',true),f('learning','Aprendizado','textarea',true)] },
+    stakeholder: { title:'Stakeholder', path:'leadership.stakeholders', fields:[f('name','Stakeholder'),f('influence','Poder / influência','select',false,[['alto','Alto'],['medio','Médio'],['baixo','Baixo']]),f('interest','Interesse principal','textarea',true),f('needsFromUs','O que precisa de nós','textarea',true),f('weNeed','O que precisamos dele','textarea',true),f('risk','Risco de desalinhamento','textarea',true),f('strategy','Estratégia de relação','textarea',true)] },
+    achievement: { title:'Feito profissional', path:'achievements', fields:[f('title','Título do feito','text',true),f('date','Data','date'),f('category','Categoria','select',false,[['resultado','Resultado'],['capacidade','Capacidade construída'],['risco','Risco reduzido'],['influencia','Influência'],['lideranca','Liderança'],['aprendizado','Aprendizado']]),f('context','Contexto / problema','textarea',true),f('roleVerb','Meu papel','select',false,[['Liderei','Liderei'],['Coordenei','Coordenei'],['Propus','Propus'],['Influenciei','Influenciei'],['Executei','Executei'],['Apoiei','Apoiei'],['Participei','Participei']]),f('action','Ação tomada','textarea',true),f('decision','Decisão ou influência exercida','textarea',true),f('quantitative','Resultado quantitativo','textarea',true),f('qualitative','Resultado qualitativo','textarea',true),f('capability','Capacidade construída','textarea',true),f('evidence','Evidência / fonte','textarea',true),f('learning','Aprendizado','textarea',true)] },
+    'review-monthly': reviewConfig('monthly','Revisão mensal'),
+    'review-quarterly': reviewConfig('quarterly','Revisão trimestral'),
+    'review-semiannual': reviewConfig('semiannual','Revisão semestral'),
+    'review-annual': reviewConfig('annual','Fechamento anual')
+  };
+
+  function f(name,label,type='text',full=false,options=[]) { return {name,label,type,full,options}; }
+  function statusOptions() { return [['planejado','Planejado'],['andamento','Em andamento'],['atencao','Em atenção'],['concluido','Concluído'],['bloqueado','Bloqueado']]; }
+  function reviewConfig(kind,title) { return { title, path:`reviews.${kind}`, fields:[f('title','Título do período','text',true),f('date','Data','date'),f('summary','Resumo executivo','textarea',true),f('results','Resultados e evidências','textarea',true),f('capabilities','Capacidades construídas','textarea',true),f('people','Pessoas e autonomia','textarea',true),f('risks','Riscos e bloqueios','textarea',true),f('learning','Aprendizados e erros','textarea',true),f('nextDecision','Decisão para o próximo ciclo','textarea',true)] }; }
+
+  function openEntityModal(type, id = null) {
+    const config = entityConfig[type];
+    if (!config) return;
+    const list = getByPath(state, config.path);
+    const existing = id ? list.find(x => x.id === id) : null;
+    const record = existing ? { ...existing } : { id: uid(type), createdAt: nowISO(), date: todayISO(), status:'planejado', progress:0, _entityType:type };
+    record._entityType = type;
+    const fieldsHTML = config.fields.map(field => renderField(field, record[field.name])).join('');
+    const attach = ['pdi','achievement','member','review-monthly','review-quarterly','review-semiannual','review-annual'].includes(type)
+      ? `<div class="field field-full"><label>Arquivos relacionados</label><input class="input" id="entityFiles" type="file" multiple><small>Os arquivos ficam neste navegador e serão associados ao registro.</small></div>` : '';
+    const html = `<form id="entityForm"><div class="form-grid">${fieldsHTML}${attach}</div><div class="form-actions"><button type="button" class="button" id="cancelForm">Cancelar</button><button type="submit" class="button button-primary">${existing?'Salvar alterações':'Criar registro'}</button></div></form>`;
+    openModal(existing ? 'Editar registro' : 'Novo registro', config.title, html);
+    $('#cancelForm').addEventListener('click', closeModal);
+    $('#entityForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const form = new FormData(e.currentTarget);
+      config.fields.forEach(field => {
+        let value = form.get(field.name) ?? '';
+        if (field.type === 'number') value = Number(value) || 0;
+        record[field.name] = value;
+      });
+      record.updatedAt = nowISO();
+      if (!existing) list.unshift(record); else Object.assign(existing, record);
+      const fileInput = $('#entityFiles');
+      if (fileInput && fileInput.files.length) await uploadFiles(fileInput.files, { type, id: record.id }, false);
+      addActivity(`${existing ? 'Atualizado' : 'Criado'}: ${record.title || record.name || config.title}`, type);
+      scheduleSave();
+      closeModal();
+      renderPage();
+      toast('Registro salvo', config.title);
+    });
+    setTimeout(() => $('#entityForm input, #entityForm textarea, #entityForm select')?.focus(), 30);
+  }
+
+  function renderField(field, value) {
+    const cls = `field ${field.full ? 'field-full' : ''}`;
+    if (field.type === 'textarea') return `<div class="${cls}"><label>${escapeHTML(field.label)}</label><textarea class="textarea" name="${field.name}">${escapeHTML(value || '')}</textarea></div>`;
+    if (field.type === 'select') return `<div class="${cls}"><label>${escapeHTML(field.label)}</label><select class="select" name="${field.name}">${field.options.map(([v,l])=>`<option value="${v}" ${String(value)===v?'selected':''}>${escapeHTML(l)}</option>`).join('')}</select></div>`;
+    return `<div class="${cls}"><label>${escapeHTML(field.label)}</label><input class="input" type="${field.type}" name="${field.name}" value="${escapeHTML(value ?? '')}" ${field.type==='number'?'min="0" max="100"':''}></div>`;
+  }
+
+  function openModal(eyebrow, title, html, wide = false) {
+    $('#modalEyebrow').textContent = eyebrow;
+    $('#modalTitle').textContent = title;
+    $('#modalBody').innerHTML = html;
+    $('.modal').classList.toggle('modal-wide', wide);
+    $('#modalBackdrop').hidden = false;
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal() { $('#modalBackdrop').hidden = true; document.body.style.overflow = ''; $('#modalBody').innerHTML = ''; }
+
+  function deleteEntity(type, id) {
+    const config = entityConfig[type];
+    if (!config) return;
+    const list = getByPath(state, config.path);
+    const item = list.find(x => x.id === id);
+    if (!item) return;
+    if (!confirm(`Excluir “${item.title || item.name || config.title}”? Esta ação não pode ser desfeita.`)) return;
+    const index = list.findIndex(x => x.id === id);
+    list.splice(index,1);
+    addActivity(`Excluído: ${item.title || item.name || config.title}`, 'delete');
+    scheduleSave(); renderPage();
+  }
+
+  function entityTypeFor(item) { return item._entityType || inferType(item); }
+  function inferType(item) {
+    const groups = [
+      ['oneOnOne',state.leadership.oneOnOnes],['feedback',state.leadership.feedbacks],['delegation',state.leadership.delegations],['decision',state.leadership.decisions],['stakeholder',state.leadership.stakeholders],
+      ['review-monthly',state.reviews.monthly],['review-quarterly',state.reviews.quarterly],['review-semiannual',state.reviews.semiannual],['review-annual',state.reviews.annual]
+    ];
+    return (groups.find(([,arr])=>arr.some(x=>x.id===item.id)) || [''])[0];
+  }
+
+  function addAnnualListItem(field) { state.annual[field].push(''); scheduleSave(); renderPage(); }
+  function removeAnnualListItem(field,index) { if (state.annual[field].length <= 1) return toast('Mantenha ao menos um campo', 'Você pode deixá-lo em branco.'); state.annual[field].splice(index,1); scheduleSave(); renderPage(); }
+
+  function openAchievementText(id) {
+    const item = state.achievements.find(x => x.id === id); if (!item) return;
+    const texts = achievementVersions(item);
+    openModal('Versões do registro', item.title, `<div class="grid">${Object.entries(texts).map(([label,text])=>`<div class="card"><div class="card-title"><div><h3>${label}</h3></div><button class="button button-small" data-copy-button>Copiar</button></div><textarea class="textarea textarea-tall" readonly>${escapeHTML(text)}</textarea></div>`).join('')}</div>`, true);
+    $$('[data-copy-button]', $('#modalBody')).forEach((btn,index)=>btn.addEventListener('click',()=>copyText(Object.values(texts)[index])));
+  }
+
+  function achievementVersions(a) {
+    const result = [a.quantitative,a.qualitative].filter(Boolean).join(' ');
+    const context = a.context || 'Em um contexto operacional relevante';
+    const action = `${a.roleVerb || 'Atuei'} ${lowerFirst(a.action || 'na condução da entrega')}`;
+    return {
+      'Avaliação interna': `${context}. Meu papel foi: ${a.roleVerb || 'atuação direta'}. ${a.action || ''} ${a.decision ? `Decisão/influência: ${a.decision}.` : ''} Resultado: ${result || 'a mensurar'}. ${a.capability ? `Capacidade construída: ${a.capability}.` : ''} ${a.evidence ? `Evidência: ${a.evidence}.` : ''}`.replace(/\s+/g,' ').trim(),
+      'Currículo': `${action}${result ? `, gerando ${lowerFirst(result)}` : ''}${a.capability ? ` e consolidando ${lowerFirst(a.capability)}` : ''}.`.replace(/\s+/g,' ').trim(),
+      'LinkedIn': `${context}. ${action}. O trabalho resultou em ${lowerFirst(result || 'uma melhoria relevante ainda em consolidação')}. ${a.learning ? `Principal aprendizado: ${a.learning}.` : ''}`.replace(/\s+/g,' ').trim(),
+      'Entrevista STAR': `Situação: ${context}\nTarefa: ${a.decision || a.title}\nAção: ${a.roleVerb || 'Atuei'} — ${a.action || ''}\nResultado: ${result || 'a mensurar'}\nReflexão: ${a.learning || 'registrar aprendizado e o que faria diferente'}`
+    };
+  }
+
+  async function uploadFiles(fileList, relation = {type:'library',id:'general'}, rerender = true) {
+    const files = Array.from(fileList);
+    for (const file of files) {
+      if (file.size > 25 * 1024 * 1024) { toast('Arquivo muito grande', `${file.name} excede 25 MB.`); continue; }
+      const record = { id:uid('file'), name:file.name, type:file.type, size:file.size, blob:file, relationKey:`${relation.type}:${relation.id}`, relationType:relation.type, relationId:relation.id, createdAt:nowISO() };
+      try { await Storage.addFile(record); fileCache.unshift(record); }
+      catch (error) { console.error(error); toast('Falha ao salvar arquivo', file.name); }
+    }
+    addActivity(`${files.length} arquivo(s) adicionado(s)`, 'file');
+    scheduleSave();
+    if (rerender) renderPage();
+    toast('Arquivos adicionados', `${files.length} item(ns) processado(s).`);
+  }
+
+  function setupDropZone() {
+    const drop = $('#fileDrop'); if (!drop) return;
+    ['dragenter','dragover'].forEach(type=>drop.addEventListener(type,e=>{e.preventDefault();drop.classList.add('dragover');}));
+    ['dragleave','drop'].forEach(type=>drop.addEventListener(type,e=>{e.preventDefault();drop.classList.remove('dragover');}));
+    drop.addEventListener('drop',e=>uploadFiles(e.dataTransfer.files,{type:'library',id:'general'}));
+  }
+
+  async function downloadFile(id) {
+    const record = await Storage.getFile(id); if (!record) return;
+    const url = URL.createObjectURL(record.blob);
+    const a = document.createElement('a'); a.href=url; a.download=record.name; a.click();
+    setTimeout(()=>URL.revokeObjectURL(url),1000);
+  }
+  async function removeFile(id) {
+    const file = fileCache.find(x=>x.id===id); if (!file) return;
+    if (!confirm(`Excluir o arquivo “${file.name}”?`)) return;
+    await Storage.deleteFile(id); fileCache = fileCache.filter(x=>x.id!==id); renderPage();
+  }
+
+  async function exportBackup() {
+    toast('Preparando backup', 'Arquivos grandes podem levar alguns segundos.');
+    const files = await Storage.getAllFiles();
+    const encoded = [];
+    for (const file of files) encoded.push({ ...omit(file,'blob'), data: await blobToDataURL(file.blob) });
+    const payload = { format:'nucleo-backup', version:1, exportedAt:nowISO(), state, files:encoded };
+    downloadBlob(new Blob([JSON.stringify(payload)],{type:'application/json'}),`nucleo-backup-${todayISO()}.json`);
+  }
+
+  async function importBackup(file) {
+    try {
+      const payload = JSON.parse(await file.text());
+      if (payload.format !== 'nucleo-backup' || !payload.state) throw new Error('Formato inválido');
+      if (!confirm('Importar este backup substituirá os dados atuais deste navegador. Continuar?')) return;
+      await Storage.clearAll();
+      state = migrateState(payload.state);
+      for (const item of payload.files || []) {
+        const blob = dataURLToBlob(item.data);
+        await Storage.addFile({ ...omit(item,'data'), blob });
+      }
+      await Storage.saveState(state);
+      fileCache = await Storage.getAllFiles();
+      applyTheme(state.meta.theme);
+      renderPage();
+      toast('Backup importado', 'Textos e arquivos foram restaurados.');
+    } catch (error) { console.error(error); toast('Backup inválido', 'O arquivo não pôde ser importado.'); }
+  }
+
+  function exportReport() {
+    const html = buildReportHTML();
+    downloadBlob(new Blob([html],{type:'text/html'}),`relatorio-desenvolvimento-${todayISO()}.html`);
+  }
+
+  function buildReportHTML() {
+    const goals = state.pdi.map(x=>`<article><h3>${escapeHTML(x.title)}</h3><p><b>Competência:</b> ${escapeHTML(x.competency)}</p><p><b>Resultado:</b> ${escapeHTML(x.result)}</p><p><b>Evidência:</b> ${escapeHTML(x.evidence)}</p><p><b>Progresso:</b> ${clamp(x.progress)}%</p></article>`).join('');
+    const feats = state.achievements.map(x=>`<article><h3>${escapeHTML(x.title)}</h3><p>${escapeHTML(achievementVersions(x)['Avaliação interna'])}</p></article>`).join('');
+    return `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><title>Relatório de Desenvolvimento</title><style>body{font-family:Arial,sans-serif;max-width:980px;margin:40px auto;padding:0 24px;color:#182033;line-height:1.5}h1{font-size:32px}h2{border-bottom:2px solid #1d7a78;padding-bottom:7px;margin-top:34px}article{border:1px solid #dfe4ea;border-radius:12px;padding:16px;margin:12px 0}small{color:#667085}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.box{background:#f4f7f8;padding:14px;border-radius:10px}@media print{body{margin:0}.no-print{display:none}}</style></head><body><small>Gerado em ${formatDateTime(nowISO())}</small><h1>${escapeHTML(state.meta.userName)} — Central de Desenvolvimento</h1><p><b>Função:</b> ${escapeHTML(state.meta.role)}<br><b>Projeto:</b> ${escapeHTML(state.meta.projectName)}</p><h2>Direção anual</h2><p>${escapeHTML(state.annual.north)}</p><div class="grid"><div class="box"><b>Resultados</b><ul>${state.annual.results.map(x=>`<li>${escapeHTML(x)}</li>`).join('')}</ul></div><div class="box"><b>Competências</b><ul>${state.annual.competencies.map(x=>`<li>${escapeHTML(x)}</li>`).join('')}</ul></div><div class="box"><b>Equipe</b><ul>${state.annual.teamPriorities.map(x=>`<li>${escapeHTML(x)}</li>`).join('')}</ul></div></div><h2>PDI</h2>${goals || '<p>Sem registros.</p>'}<h2>Feitos profissionais</h2>${feats || '<p>Sem registros.</p>'}<h2>Leitura de maturidade</h2><ul>${Object.entries(state.project.maturity).map(([k,v])=>`<li>${escapeHTML(k)}: ${v}/5</li>`).join('')}</ul><p class="no-print"><button onclick="window.print()">Imprimir / salvar em PDF</button></p></body></html>`;
+  }
+
+  async function requestPersistentStorage() {
+    if (!navigator.storage?.persist) return toast('Recurso indisponível', 'Seu navegador não oferece essa opção.');
+    const granted = await navigator.storage.persist();
+    toast(granted ? 'Armazenamento protegido' : 'Solicitação não concedida', granted ? 'O navegador marcou os dados como persistentes.' : 'Mantenha backups periódicos.');
+  }
+
+  async function resetApp() {
+    if (!confirm('Apagar todos os textos, registros e arquivos deste navegador?')) return;
+    if (!confirm('Confirmação final: esta ação não pode ser desfeita sem um backup.')) return;
+    await Storage.clearAll(); state=defaultState(); await Storage.saveState(state); fileCache=[]; applyTheme('light'); navigate('dashboard'); toast('Central reiniciada','Todos os dados locais foram apagados.');
+  }
+
+  function handleSearch(event) {
+    const query = event.target.value.trim().toLowerCase();
+    if (searchBox) searchBox.remove();
+    if (query.length < 2) return;
+    const results = searchIndex().filter(x=>x.text.toLowerCase().includes(query)).slice(0,12);
+    searchBox = document.createElement('div'); searchBox.className='search-results';
+    searchBox.innerHTML = results.length ? results.map(r=>`<button class="search-result" data-page-target="${r.page}"><strong>${highlight(r.title,query)}</strong><span>${highlight(r.text.slice(0,150),query)}</span></button>`).join('') : '<div class="empty-state"><strong>Nenhum resultado</strong><p>Tente um termo mais específico.</p></div>';
+    document.body.appendChild(searchBox);
+    searchBox.addEventListener('click',e=>{const btn=e.target.closest('[data-page-target]');if(!btn)return;navigate(btn.dataset.pageTarget);searchBox.remove();searchBox=null;$('#globalSearch').value='';});
+  }
+
+  function searchIndex() {
+    const out=[]; const push=(page,title,obj)=>out.push({page,title,text:flattenText(obj)});
+    push('annual','Direção anual',state.annual);
+    state.pdi.forEach(x=>push('pdi',x.title,x));
+    state.project.okrs.forEach(x=>push('project',x.title,x));
+    state.project.improvements.forEach(x=>push('project',x.title,x));
+    state.project.risks.forEach(x=>push('project',x.title,x));
+    state.team.members.forEach(x=>push('team',x.name,x));
+    Object.values(state.leadership).flat().forEach(x=>push('leadership',x.title||x.person||x.name||'Registro de liderança',x));
+    state.achievements.forEach(x=>push('achievements',x.title,x));
+    Object.values(state.reviews).flat().forEach(x=>push('reviews',x.title||'Revisão',x));
+    fileCache.forEach(x=>push('library',x.name,x.name));
+    return out;
+  }
+
+  function handleShortcuts(e) {
+    if (e.key === 'Escape') { if (!$('#modalBackdrop').hidden) closeModal(); if (searchBox) { searchBox.remove(); searchBox=null; } }
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); $('#globalSearch').focus(); }
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'n') { e.preventDefault(); openQuickCapture(); }
+  }
+
+  function getNextReview() {
+    const dates = [
+      {date:state.annual.nextMonthlyReview,label:'revisão mensal'},
+      {date:state.annual.nextQuarterlyReview,label:'revisão trimestral'}
+    ].filter(x=>x.date).sort((a,b)=>a.date.localeCompare(b.date));
+    if (!dates.length) return {value:'—',label:'defina a próxima data'};
+    return {value:formatDate(dates[0].date,{day:'2-digit',month:'short'}),label:dates[0].label};
+  }
+
+  function statusLabel(status) { return ({planejado:'Planejado',andamento:'Em andamento',atencao:'Em atenção',concluido:'Concluído',bloqueado:'Bloqueado'})[status] || status || 'Planejado'; }
+  function avg(values) { const nums=values.map(Number).filter(Number.isFinite); return nums.length ? nums.reduce((a,b)=>a+b,0)/nums.length : 0; }
+  function countBy(arr,key) { return arr.reduce((acc,x)=>(acc[x[key]||'outros']=(acc[x[key]||'outros']||0)+1,acc),{}); }
+  function initials(name='') { return name.split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join('').toUpperCase() || '?'; }
+  function lowerFirst(text='') { return text ? text[0].toLowerCase()+text.slice(1) : ''; }
+  function formatDate(date, options={day:'2-digit',month:'2-digit',year:'numeric'}) { if(!date)return 'Sem prazo'; const d=new Date(`${date}T12:00:00`); return Number.isNaN(d.getTime())?'—':new Intl.DateTimeFormat('pt-BR',options).format(d); }
+  function formatDateTime(date) { if(!date)return '—'; const d=new Date(date); return new Intl.DateTimeFormat('pt-BR',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}).format(d); }
+  function formatBytes(bytes=0) { const units=['B','KB','MB','GB']; let i=0,n=bytes; while(n>=1024&&i<units.length-1){n/=1024;i++;} return `${n.toFixed(i?1:0)} ${units[i]}`; }
+  function debounce(fn,wait){let t;return(...args)=>{clearTimeout(t);t=setTimeout(()=>fn(...args),wait);};}
+  function setByPath(obj,path,value){const parts=path.split('.');const last=parts.pop();const target=parts.reduce((a,k)=>a[k],obj);target[last]=value;}
+  function getByPath(obj,path){return path.split('.').reduce((a,k)=>a[k],obj);}
+  function omit(obj,...keys){return Object.fromEntries(Object.entries(obj).filter(([k])=>!keys.includes(k)));}
+  function flattenText(obj){if(obj==null)return'';if(typeof obj==='string'||typeof obj==='number')return String(obj);if(Array.isArray(obj))return obj.map(flattenText).join(' ');if(typeof obj==='object')return Object.entries(obj).filter(([k])=>!['blob','id'].includes(k)).map(([,v])=>flattenText(v)).join(' ');return'';}
+  function highlight(text,query){const safe=escapeHTML(text);const q=escapeHTML(query).replace(/[.*+?^${}()|[\]\\]/g,'\\$&');return safe.replace(new RegExp(`(${q})`,'ig'),'<mark>$1</mark>');}
+  function copyText(text){navigator.clipboard?.writeText(text).then(()=>toast('Copiado','Texto enviado para a área de transferência.')).catch(()=>toast('Não foi possível copiar','Selecione e copie manualmente.'));}
+  function toast(title,message=''){const el=document.createElement('div');el.className='toast';el.innerHTML=`<strong>${escapeHTML(title)}</strong>${escapeHTML(message)}`;$('#toastRegion').appendChild(el);setTimeout(()=>el.remove(),3600);}
+  function blobToDataURL(blob){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(blob);});}
+  function dataURLToBlob(dataURL){const [head,data]=dataURL.split(',');const mime=(head.match(/data:(.*?);/)||[])[1]||'application/octet-stream';const bin=atob(data);const arr=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);return new Blob([arr],{type:mime});}
+  function downloadBlob(blob,name){const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+  function renderFatal(error){$('#mainContent').innerHTML=`<div class="empty-state"><strong>Não foi possível iniciar a central</strong><p>${escapeHTML(error.message||String(error))}</p></div>`;}
+
+  init();
+})();
+
+  </script>
+</body>
+</html>
