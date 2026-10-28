@@ -434,7 +434,8 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
   .hero p,.metric-foot,.list-item p,.section-header p { color:#444; }
 }
 
-  </style>
+  @media(max-width:520px){.topbar{flex-wrap:wrap;gap:10px}.page-heading{flex:1;min-width:0}.topbar-actions{flex-basis:100%;justify-content:flex-end;min-width:0;width:100%;flex-wrap:wrap}.search-wrap{transition:none;flex:0 0 42px;max-width:42px}.search-wrap:focus-within{max-width:none;flex-basis:auto}.card{overflow-wrap:anywhere}.button{max-width:100%}}
+</style>
 </head>
 <body>
   <noscript>Este aplicativo precisa de JavaScript habilitado.</noscript>
@@ -538,6 +539,7 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
   const STATE_STORE = 'state';
   const FILE_STORE = 'files';
   let dbPromise;
+  let accountKey='app';
 
   function openDB() {
     if (dbPromise) return dbPromise;
@@ -575,14 +577,14 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
     const db = await openDB();
     return new Promise((resolve, reject) => {
       const tx = db.transaction(STATE_STORE, 'readonly');
-      const req = tx.objectStore(STATE_STORE).get('app');
+      const req = tx.objectStore(STATE_STORE).get(accountKey);
       req.onsuccess = () => resolve(req.result || null);
       req.onerror = () => reject(req.error);
     });
   }
 
   async function saveState(state) {
-    return withStore(STATE_STORE, 'readwrite', store => store.put(state, 'app'));
+    return withStore(STATE_STORE, 'readwrite', store => store.put(state, accountKey));
   }
 
   async function addFile(record) {
@@ -624,7 +626,7 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
     });
   }
 
-  window.NucleoStorage = { openDB, getState, saveState, addFile, getFile, getAllFiles, deleteFile, clearAll };
+  window.NucleoStorage = { setScope:id=>{accountKey='user:'+id;}, openDB, getState, saveState, addFile, getFile, getAllFiles, deleteFile, clearAll };
 })();
 
   </script>
@@ -641,13 +643,100 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
     auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
   });
   let currentUser = null;
+  const SHARED_URL='https://zeowzrsuzywienrjeebs.supabase.co/functions/v1/development-bridge';
+  const embeddedMode=new URLSearchParams(location.search).get('embedded')==='1';
+  let sharedMode=false, sharedRevision=null, sharedConflict=false, bridgeSession=null, selectedPerson=null, personTab='Resumo', sharedSaving=false;
+  async function sharedToken(){
+    if(embeddedMode){if(!bridgeSession)throw Error('Entre no Danielle OS para abrir a central.');return bridgeSession.access_token;}
+    const {data,error}=await supabaseClient.auth.getSession();if(error||!data.session)throw Error('Entre novamente.');return data.session.access_token;
+  }
+  async function sharedRequest(query='',options={}){
+    const token=await sharedToken();const r=await fetch(SHARED_URL+query,{...options,headers:{Authorization:'Bearer '+token,...options.headers}});
+    let body;try{body=await r.json();}catch{throw Error('Resposta de sincronização inválida.');}
+    if(!r.ok){const e=new Error(body.message||body.error||'Falha de sincronização');e.status=r.status;throw e;}return body;
+  }
+  async function detectSharedWorkspace(){
+    if(currentUser?.email?.toLowerCase()==='visitante@visitante.com')return false;
+    try{return !!(await sharedRequest('?access')).linked;}catch(e){if(e.status===403&&!embeddedMode)return false;throw e;}
+  }
+  function conflictNotice(){return sharedConflict?`<div class="card" role="alert" style="border:2px solid #da963c;margin-bottom:18px"><h2>Outra edição foi salva</h2><p>Seu rascunho está preservado neste navegador. Baixe-o antes de carregar a versão atual dos dois aplicativos.</p><button class="button" data-action="shared-draft">Baixar rascunho</button> <button class="button button-primary" data-action="shared-reload">Carregar versão da nuvem</button></div>`:'';}
+  function sharedGroupTabs(){
+    const groups=[['annual','pdi','reviews'],['project','achievements'],['library','methods']];const group=groups.find(a=>a.includes(currentPage));
+    return group?`<div class="tabs" style="margin-bottom:20px">${group.map(p=>`<button class="tab ${p===currentPage?'active':''}" data-action="navigate" data-page="${p}">${escapeHTML(pageMeta[p][0])}</button>`).join('')}</div>`:'';
+  }
+  function configureSharedNavigation(){
+    const entries=[['dashboard','Visão geral','⌂'],['pdi','Meu desenvolvimento','↗'],['team','Equipe e minha líder','◉'],['leadership','Liderança','△'],['project','Projetos e impacto','◇'],['library','Biblioteca e métodos','▣']];
+    $('#mainNav').innerHTML=entries.map(([p,l,i])=>`<button class="nav-item" data-page="${p}"><span class="nav-icon">${i}</span><span>${l}</span></button>`).join('');
+    $$('#mainNav [data-page]').forEach(b=>b.addEventListener('click',()=>navigate(b.dataset.page)));
+  }
+  function activePeople(){return state.team.members.filter(x=>!x._inactive);}
+  function personButton(m){return `<button class="button button-primary" data-action="person" data-id="${escapeHTML(m.id)}">${m.relationshipType==='manager'?'Alinhamentos com minha líder':'Abrir acompanhamento'}</button>`;}
+  function renderSharedPeople(){
+    const active=activePeople(),reports=active.filter(x=>x.relationshipType!=='manager'),managers=active.filter(x=>x.relationshipType==='manager');
+    if(selectedPerson){const m=active.find(x=>x.id===selectedPerson);if(m)return renderPerson(m);selectedPerson=null;}
+    return `<div class="page"><section class="section"><div class="section-header"><div><h2>Equipe</h2><p>Desenvolvimento e evidências das pessoas que você acompanha.</p></div><button class="button" data-action="add" data-type="member">Adicionar pessoa</button></div><div class="grid grid-2">${reports.map(m=>`<article class="card"><h3>${escapeHTML(m.name)}</h3><p>${escapeHTML(m.role)}</p><p>${escapeHTML(m.strengths)}</p>${personButton(m)}</article>`).join('')||'<p>Nenhuma liderada no acompanhamento ativo.</p>'}</div></section><section class="section"><h2>Minha liderança</h2><p>Alinhamentos, feedbacks recebidos, expectativas e apoio ao seu desenvolvimento.</p><div class="grid grid-2">${managers.map(m=>`<article class="card"><h3>${escapeHTML(m.name)} · Minha líder</h3><p>Registre conversas e acordos da sua relação com a liderança.</p>${personButton(m)}</article>`).join('')}</div></section></div>`;
+  }
+  function dossierCard(title,body){return `<article class="card"><h3>${escapeHTML(title)}</h3>${body}</article>`;}
+  function editDevelopmentButton(kind,m,item,label='Atualizar'){return `<button class="button button-small" data-action="development-edit" data-kind="${kind}" data-member="${m.id}" data-id="${item?.id||''}">${label}</button>`;}
+  function renderPerson(m){
+    const d=m.development||{},manager=m.relationshipType==='manager';const tabs=manager?['Resumo','Alinhamentos','1:1','Fontes']:['Resumo','Competências','Ações','Evolução','Colaboração da líder','1:1','Fontes'];if(!tabs.includes(personTab))personTab='Resumo';
+    let body='';
+    if(personTab==='Resumo'){
+      body=dossierCard(manager?'Meu desenvolvimento com a Nath':'Quem é a Manu e onde quer chegar',`<p>${nl2br(d.summary||'Registre o contexto e as expectativas desta relação.')}</p>`);
+      if(!manager){const a=d.actions||[],n=a.filter(x=>x.status==='Finalizado').length,total=(d.salva?.records||[]).reduce((s,r)=>s+(r.discount??0),0);body+=`<div class="grid grid-3" style="margin-top:20px">${metricCard('Qulture Rocks',d.officialProgress===undefined?'—':d.officialProgress+'%','Progresso informado na fonte · consulta de 28/10/2026','↗')}${metricCard('Ações finalizadas',n+' / '+a.length,'Conclusão das ações; indicador diferente do Qulture','✓')}${metricCard('Salva Vidas',total.toLocaleString('pt-BR')+' pontos','Somente descontos explícitos · sem nota final','◇')}</div><div class="card" style="margin-top:20px"><h3>Andamento das ações</h3><div class="progress" role="img" aria-label="${n} de ${a.length} ações finalizadas"><span style="width:${a.length?n/a.length*100:0}%"></span></div><p>${n} finalizadas · ${a.length-n} restantes</p></div><div class="grid grid-2" style="margin-top:20px">${dossierCard('Forças observadas','<p>'+nl2br(m.strengths)+'</p>')}${dossierCard('Desenvolvimento prioritário','<p>'+nl2br(m.gaps)+'</p>')}</div>`;
+      }else body+=`<p>Os registros abaixo são sobre a sua relação com a líder. As interpretações comportamentais anteriores continuam identificadas em Fontes.</p><button class="button button-primary" data-action="person-tab" data-tab="Alinhamentos">Registrar alinhamento</button>`;
+    }
+    if(personTab==='Resumo'&&!manager)body+=`<button class="button" data-action="edit" data-type="member" data-id="${m.id}">Editar perfil e forças observadas</button>`;
+    if(personTab==='Ações')body=(d.actions||[]).map(x=>dossierCard(x.title,`<p>${escapeHTML(x.area)} · ${escapeHTML(x.kind)} · ${escapeHTML(x.status)}</p><p>${nl2br(x.description)}</p><p><strong>Prazo:</strong> ${x.due?formatDate(x.due):'Não informado'} · ${escapeHTML(x.dueOrigin)}</p><p><strong>Evidência:</strong> ${nl2br(x.evidence||'Ainda não registrada')}</p>${editDevelopmentButton('actions',m,x)}`)).join('');
+    if(personTab==='Competências')body=(d.competencies||[]).map(x=>dossierCard(x.title,`<p><strong>Esperado:</strong> ${escapeHTML(x.expected)}</p><p><strong>Início do ciclo:</strong> ${escapeHTML(x.baseline)}</p><p><strong>Atual:</strong> ${escapeHTML(x.status)} · ${escapeHTML(x.trend)}</p><p><strong>Evidência:</strong> ${escapeHTML(x.evidence)}</p><p><strong>Próximo passo:</strong> ${escapeHTML(x.nextStep)}</p><small>Leitura qualitativa da planilha, sem conversão em nota.</small><p>${editDevelopmentButton('competencies',m,x)}</p>`)).join('');
+    if(personTab==='Colaboração da líder')body=`<p>Seus compromissos com o desenvolvimento da Manu, conforme o PDI em PDF.</p>`+(d.commitments||[]).map(x=>dossierCard(x.title,`<p>${nl2br(x.description)}</p><p>${escapeHTML(x.cadence)} · ${escapeHTML(x.status)}</p><p>${nl2br(x.evidence||'Sem evidência de realização registrada.')}</p>${editDevelopmentButton('commitments',m,x)}`)).join('');
+    if(personTab==='Evolução'||personTab==='Alinhamentos'){
+      body=`<p>${manager?'Registre expectativas, feedbacks recebidos, decisões, pedidos de apoio e seus compromissos.':'Registre fatos e evidências; o histórico da fonte não significa evolução confirmada depois da importação.'}</p>${editDevelopmentButton('observations',m,null,manager?'Novo alinhamento':'Nova evidência')}`;
+      body+=(d.observations||[]).map(x=>dossierCard(x.title,`<p>${formatDate(x.date)} · ${escapeHTML(x.kind||'Observação')}</p><p>${nl2br(x.description)}</p><p><strong>Próximo passo:</strong> ${nl2br(x.nextStep||'A definir')}</p>${editDevelopmentButton('observations',m,x)}`)).join('');
+      if(!manager){body+='<h2>Checkpoints do ciclo</h2>'+(d.checkpoints||[]).map(x=>dossierCard(x.title,`<p>${formatDate(x.date)} · ${escapeHTML(x.status)}</p><p>${nl2br(x.evidence||'Sem resultado registrado.')}</p>${editDevelopmentButton('checkpoints',m,x)}`)).join('');body+=`<details class="card"><summary>Feedback formal · 11/10/2026</summary><p>${nl2br(d.feedbackText||'')}</p></details><h2>Salva Vidas</h2><p>Recorte consultado em ${escapeHTML(d.salva?.updatedAt||'data não informada')}. Esta seção mantém a referência da importação; a planilha possui atualização horária.</p>`+(d.salva?.records||[]).map(r=>{const color=r.classification.startsWith('Impactante')?'#b31b16':r.classification.startsWith('Leve')?'#ffb7b1':r.classification.startsWith('Crítico')?'#3d3d3d':'#e6e6e6';const fg=['#b31b16','#3d3d3d'].includes(color)?'#fff':'#333';return dossierCard(r.date+' · '+r.topic,`<p><span style="background:${color};color:${fg};padding:5px 10px;border-radius:8px">${escapeHTML(r.classification)}</span></p><p>${nl2br(r.observations)}</p><p>${r.discount===null?'Sem desconto explícito':r.discount.toLocaleString('pt-BR')+' pontos'} · Linha ${r.row} da origem</p>`);}).join('');}
+    }
+    if(personTab==='1:1'){
+      const records=state.leadership.oneOnOnes.filter(x=>x.teamMemberId===m.id||x.person===m.name);
+      body=`<p>${manager?'Prepare sua conversa com a Nath a partir das suas prioridades, evidências e decisões necessárias.':'Use o roteiro como preparação. Não há respostas do formulário importadas.'}</p><button class="button button-primary" data-action="person-one-on-one" data-id="${m.id}">Registrar 1:1</button> <a class="button" href="${escapeHTML(state.oneOnOneTemplate?.url||'#')}" target="_blank" rel="noopener">Abrir formulário de preparação</a><div class="card" style="margin-top:18px"><h3>Roteiro de preparação</h3><ol>${(state.oneOnOneTemplate?.questions||[]).map(q=>'<li>'+escapeHTML(q)+'</li>').join('')}</ol></div><h3>Conversas registradas</h3>${records.map(oneOnOneCard).join('')||'<p>Nenhuma conversa registrada.</p>'}`;
+    }
+    if(personTab==='Fontes')body=`<p>Importação em 28/10/2026. Qulture, PDFs e documentos são referências; não recebem alterações automáticas dos aplicativos.</p>`+(d.sources||[]).map(x=>dossierCard(x.title,`<a class="button" href="${escapeHTML(x.url)}" target="_blank" rel="noopener">Abrir fonte</a>`)).join('')+(d.behavioral||[]).map(x=>dossierCard('DISC · referência comportamental',`<p>${escapeHTML(x.profile_name)} · ${formatDate(x.assessment_date)}</p><p>${escapeHTML(x.source_notes)}</p><p>Hipóteses comportamentais não substituem fatos nem avaliação de desempenho.</p>`)).join('');
+    return `<div class="page"><button class="button" data-action="person-back">← Voltar</button><h2 style="margin-top:20px">${escapeHTML(m.name)}${manager?' · Minha líder':''}</h2><div class="tabs" style="display:flex;flex-wrap:wrap;gap:8px;margin:20px 0">${tabs.map(t=>`<button class="button ${t===personTab?'button-primary':''}" data-action="person-tab" data-tab="${escapeHTML(t)}">${t}</button>`).join('')}</div><div class="grid" style="gap:18px">${body}</div></div>`;
+  }
+  function editDevelopment(kind,memberId,id){
+    const m=state.team.members.find(x=>x.id===memberId);if(!m)return;
+    const d=m.development||=( {} );const list=d[kind]||=[];const old=list.find(x=>x.id===id);const r=old?{...old}:{id:crypto.randomUUID(),date:todayISO(),kind:'Alinhamento',title:'',description:'',nextStep:''};
+    const definitions={actions:[f('status','Status','select',false,[['Em progresso','Em progresso'],['Finalizado','Finalizado'],['Não iniciado','Não iniciado']]),f('due','Prazo','date'),f('dueOrigin','Origem do prazo'),f('evidence','Evidência / resultado','textarea',true)],commitments:[f('status','Acompanhamento','select',true,[['A acompanhar','A acompanhar'],['Em andamento','Em andamento'],['Realizado','Realizado']]),f('evidence','Evidência / resultado','textarea',true)],competencies:[f('status','Status observado'),f('trend','Tendência'),f('evidence','Evidência','textarea',true),f('nextStep','Próximo passo','textarea',true)],checkpoints:[f('status','Status','select',true,[['Planejado','Planejado'],['Realizado','Realizado'],['Remarcado','Remarcado']]),f('date','Data','date'),f('evidence','Evidências e decisões','textarea',true)],observations:[f('title','Título','text',true),f('date','Data','date'),f('kind','Tipo','select',true,[['Alinhamento','Alinhamento'],['Expectativa','Expectativa'],['Feedback recebido','Feedback recebido'],['Pedido de apoio','Pedido de apoio'],['Decisão','Decisão'],['Compromisso','Compromisso'],['Evidência','Evidência']]),f('description','Registro factual','textarea',true),f('nextStep','Próximo passo / acordo','textarea',true)]};
+    const fields=definitions[kind];if(!fields)return;
+    openModal(m.relationshipType==='manager'?'Minha liderança':'Acompanhamento',r.title||'Novo registro',`<form id="developmentForm"><div class="form-grid">${fields.map(x=>renderField(x,r[x.name])).join('')}</div><div class="form-actions"><button class="button" type="button" id="cancelDevelopment">Cancelar</button><button class="button button-primary" type="submit">Salvar registro</button></div></form>`);
+    $('#cancelDevelopment').onclick=closeModal;
+    $('#developmentForm').onsubmit=e=>{e.preventDefault();const form=new FormData(e.currentTarget);for(const field of fields)r[field.name]=form.get(field.name)||'';if(kind==='observations'&&!r.title.trim())return;r.updatedAt=nowISO();if(old)Object.assign(old,r);else list.unshift(r);scheduleSave();closeModal();renderPage();};
+  }
+  function sharedActions(action){
+    const {action:name,id,member,kind,tab}=action.dataset;
+    if(name==='person'){selectedPerson=id;personTab='Resumo';navigate('team');return true;}
+    if(name==='person-back'){selectedPerson=null;renderPage();return true;}
+    if(name==='person-tab'){personTab=tab;renderPage();return true;}
+    if(name==='development-edit'){editDevelopment(kind,member,id);return true;}
+    if(name==='person-one-on-one'){openEntityModal('oneOnOne');const m=state.team.members.find(x=>x.id===id);const p=$('#entityForm [name="person"]');if(p&&m)p.value=m.name;return true;}
+    if(name==='shared-draft'){downloadBlob(new Blob([JSON.stringify(state)],{type:'application/json'}),'rascunho-desenvolvimento.json');return true;}
+    if(name==='shared-reload'){if(confirm('Carregar a versão da nuvem? Baixe o rascunho antes de continuar.')){sharedConflict=false;pendingCloudSave=false;cloudUpdatedAt=null;refreshFromCloud();}return true;}
+    return false;
+  }
+  window.addEventListener('message',async e=>{
+    if(!embeddedMode||e.origin!==location.origin||e.source!==parent)return;
+    if(e.data?.type==='NUCLEO_SIGN_OUT'){bridgeSession=null;currentUser=null;state=null;appStarted=false;showAuthGate('Entre no Danielle OS.');return;}
+    if(e.data?.type==='NUCLEO_SESSION'&&e.data.session?.access_token){bridgeSession=e.data.session;if(!appStarted){try{await startAuthenticatedApp(bridgeSession.user);}catch(error){showAuthGate('Não foi possível conectar sua conta à base compartilhada. Entre novamente ou tente mais tarde.',true);}}}
+    if(e.data?.type==='NUCLEO_NAVIGATE'&&appStarted){if(e.data.member){selectedPerson=e.data.member;personTab='Resumo';}navigate(e.data.page||'team');}
+  });
+  setInterval(async()=>{if(sharedMode&&appStarted&&!document.hidden&&!pendingCloudSave&&!sharedSaving&&$('#modalBackdrop').hidden&&!document.activeElement?.matches('input,textarea,select,[contenteditable="true"]')){await refreshFromCloud();if(currentPage==='library'){try{const files=await loadCloudFiles();if(JSON.stringify(files)!==JSON.stringify(fileCache)){fileCache=files;renderPage();}}catch(error){setCloudBadge('offline','Falha ao atualizar arquivos');}}}},7000);
+
   let cloudUpdatedAt = null;
   let pendingCloudSave = false;
   let authMode = 'signin';
   let appStarted = false;
   const $ = (selector, root = document) => root.querySelector(selector);
   const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
-  const uid = (prefix = 'id') => `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+  const uid = (prefix = 'id') => sharedMode?crypto.randomUUID(): `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
   const nowISO = () => new Date().toISOString();
   const todayISO = () => new Date().toISOString().slice(0, 10);
   const escapeHTML = (value = '') => String(value).replace(/[&<>'"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[ch]));
@@ -767,6 +856,7 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
       window.addEventListener('online', syncPendingState);
       document.addEventListener('visibilitychange', () => { if (!document.hidden && currentUser) refreshFromCloud(); });
 
+      if(embeddedMode){showAuthGate('Conectando ao Danielle OS…');parent.postMessage({type:'NUCLEO_READY'},location.origin);return;}
       const { data: { session }, error } = await supabaseClient.auth.getSession();
       if (error) throw error;
       if (session?.user) await startAuthenticatedApp(session.user);
@@ -878,6 +968,9 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
   async function startAuthenticatedApp(user) {
     if (appStarted && currentUser?.id === user.id) return;
     currentUser = user;
+    Storage.setScope(user.id);
+    sharedMode=await detectSharedWorkspace();
+    if(sharedMode)configureSharedNavigation();
     setCloudBadge('pending', 'Sincronizando');
     try {
       const isVisitor = user.email?.toLowerCase() === 'visitante@visitante.com';
@@ -896,7 +989,8 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
       hideAuthGate();
       appStarted = true;
       navigate(location.hash.replace('#/', '') || 'dashboard', false);
-      setCloudBadge('online', 'Nuvem sincronizada');
+      setCloudBadge('online',sharedMode?'Base compartilhada':'Nuvem sincronizada');
+      if(embeddedMode){$('#signOutButton').hidden=true;parent.postMessage({type:'NUCLEO_LOADED'},location.origin);}
     } catch (error) {
       console.error(error);
       const setupMissing = /app_state|relation .* does not exist|schema cache/i.test(String(error?.message || error));
@@ -907,6 +1001,7 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
   }
 
   async function loadCloudState() {
+    if(sharedMode){const remote=await sharedRequest();sharedRevision=remote.revision;return remote;}
     const { data, error } = await supabaseClient
       .from('app_state')
       .select('state, updated_at')
@@ -918,6 +1013,12 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
 
   async function saveCloudState(nextState) {
     if (!currentUser) throw new Error('Sessão não encontrada');
+    if(sharedMode){
+      if(sharedConflict)throw Error('Resolva o conflito antes de salvar.');
+      sharedSaving=true;document.getElementById("appShell").inert=true;
+      try{const remote=await sharedRequest('',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({revision:sharedRevision,state:nextState})});sharedRevision=remote.revision;cloudUpdatedAt=remote.updated_at;state=migrateState(remote.state);await Storage.saveState(state);if(embeddedMode)parent.postMessage({type:'NUCLEO_SAVED'},location.origin);}
+      catch(e){if(e.status===409){sharedConflict=true;renderPage();}throw e;}finally{sharedSaving=false;document.getElementById("appShell").inert=false;}return;
+    }
     const updatedAt = nowISO();
     const { error } = await supabaseClient
       .from('app_state')
@@ -927,6 +1028,7 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
   }
 
   async function loadCloudFiles() {
+    if(sharedMode)return (await sharedRequest('?files')).files.map(fileFromRow);
     const { data, error } = await supabaseClient
       .from('app_files')
       .select('*')
@@ -968,7 +1070,7 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
   }
 
   async function refreshFromCloud() {
-    if (pendingCloudSave || !currentUser || !state) return;
+    if (pendingCloudSave || sharedSaving || !currentUser || !state || !$('#modalBackdrop').hidden || document.activeElement?.matches('input,textarea,select,[contenteditable="true"]')) return;
     try {
       const remote = await loadCloudState();
       if (remote?.updated_at && (!cloudUpdatedAt || remote.updated_at > cloudUpdatedAt)) {
@@ -1021,7 +1123,7 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
     if (!pageMeta[page]) page = 'dashboard';
     currentPage = page;
     if (updateHash) location.hash = `/${page}`;
-    $$('.nav-item[data-page]').forEach(btn => btn.classList.toggle('active', btn.dataset.page === page));
+    $$('.nav-item[data-page]').forEach(btn => btn.classList.toggle('active', btn.dataset.page === ({annual:'pdi',reviews:'pdi',achievements:'project',methods:'library'}[page]||page)));
     $('#sidebar').classList.remove('open');
     const [title, eyebrow] = pageMeta[page];
     $('#pageTitle').textContent = title;
@@ -1045,7 +1147,7 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
       methods: renderMethods,
       settings: renderSettings
     };
-    $('#mainContent').innerHTML = renderers[currentPage]();
+    $('#mainContent').innerHTML = (sharedMode?conflictNotice()+sharedGroupTabs():'')+renderers[currentPage]();
     bindPageEvents(currentPage);
   }
 
@@ -1060,6 +1162,7 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
   function handlePageClick(event) {
     const action = event.target.closest('[data-action]');
     if (!action) return;
+    if(sharedMode&&sharedActions(action))return;
     const { action: name, id, type, tab, page } = action.dataset;
     if (name === 'navigate') return navigate(page);
     if (name === 'tab') { currentTab[currentPage] = tab; return renderPage(); }
@@ -1107,6 +1210,7 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
   }
 
   function scheduleSave(message = 'Salvando alterações') {
+    pendingCloudSave=true;
     $('#saveStrip').classList.add('saving');
     $('#saveStatus').textContent = message;
     setCloudBadge('pending', 'Salvando');
@@ -1163,6 +1267,7 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
     const recent = state.activity.slice(0, 6);
 
     return `<div class="page">
+      ${sharedMode?'<section class="card" style="margin-bottom:20px"><h2>Meu desenvolvimento e minha equipe</h2><p>Base compartilhada com o Danielle OS. Os registros salvos são os mesmos nos dois aplicativos.</p><div style="display:flex;flex-wrap:wrap;gap:10px">'+activePeople().map(m=>'<button class="button" data-action="person" data-id="'+m.id+'">'+escapeHTML(m.name)+(m.relationshipType==='manager'?' · Minha líder':' · Acompanhamento')+'</button>').join('')+'</div></section>':''}
       <section class="hero">
         <div class="hero-grid">
           <div>
@@ -1368,6 +1473,7 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
   }
 
   function renderTeam() {
+    if(sharedMode)return renderSharedPeople();
     const readiness = state.team.members.filter(x => x.readiness === 'pronto').length;
     const backups = state.team.members.filter(x => x.backupFor).length;
     return `<div class="page">
@@ -1676,6 +1782,7 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
     const list = getByPath(state, config.path);
     const item = list.find(x => x.id === id);
     if (!item) return;
+    if(sharedMode&&['member','pdi','oneOnOne','feedback','delegation','achievement','decision','review-monthly'].includes(type)){toast('Histórico preservado','Use os campos de status para concluir ou pausar registros. A exclusão de registros compartilhados não está disponível nesta tela.');return;}
     if (!confirm(`Excluir “${item.title || item.name || config.title}”? Esta ação não pode ser desfeita.`)) return;
     const index = list.findIndex(x => x.id === id);
     list.splice(index,1);
@@ -1720,6 +1827,7 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
 
   async function uploadSingleFile(file, relation = {type:'library',id:'general'}, preferredId = null, createdAt = null) {
     if (!currentUser) throw new Error('Entre novamente para enviar arquivos.');
+    if(sharedMode){const form=new FormData();form.append('file',file);form.append('relation_type',relation.type);form.append('relation_id',relation.id);return fileFromRow((await sharedRequest('?files',{method:'POST',body:form})).file);}
     if (file.size > 25 * 1024 * 1024) throw new Error(`${file.name} excede 25 MB.`);
     const id = preferredId || uid('file');
     const path = `${currentUser.id}/${id}-${safeStorageName(file.name)}`;
@@ -1771,6 +1879,7 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
   async function downloadFile(id) {
     const record = fileCache.find(x => x.id === id); if (!record) return;
     setCloudBadge('pending', 'Baixando arquivo');
+    if(sharedMode){try{const r=await sharedRequest('?download='+encodeURIComponent(id));const a=document.createElement('a');a.href=r.url;a.download=record.name;a.rel='noopener';a.click();setCloudBadge('online','Base compartilhada');}catch(e){toast('Falha ao baixar',e.message);}return;}
     const { data, error } = await supabaseClient.storage.from(CLOUD_BUCKET).download(record.storagePath);
     if (error) { setCloudBadge('offline','Falha no download'); return toast('Não foi possível baixar', error.message); }
     downloadBlob(data, record.name);
@@ -1780,6 +1889,7 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
   async function removeFile(id) {
     const file = fileCache.find(x=>x.id===id); if (!file) return;
     if (!confirm(`Excluir o arquivo “${file.name}” da nuvem?`)) return;
+    if(sharedMode){try{await sharedRequest('?remove-file='+encodeURIComponent(id),{method:'POST'});fileCache=await loadCloudFiles();renderPage();}catch(e){toast('Falha ao excluir',e.message);}return;}
     const { error: storageError } = await supabaseClient.storage.from(CLOUD_BUCKET).remove([file.storagePath]);
     if (storageError) return toast('Falha ao excluir arquivo', storageError.message);
     const { error: metaError } = await supabaseClient.from('app_files').delete().eq('id', id).eq('user_id', currentUser.id);
@@ -1793,7 +1903,7 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
     toast('Preparando backup', 'Os arquivos serão baixados da nuvem. Isso pode levar alguns segundos.');
     const encoded = [];
     for (const file of fileCache) {
-      const { data, error } = await supabaseClient.storage.from(CLOUD_BUCKET).download(file.storagePath);
+      const {data,error}=sharedMode?await(async()=>{try{const link=await sharedRequest('?download='+encodeURIComponent(file.id));const r=await fetch(link.url);if(!r.ok)throw Error('Download falhou');return{data:await r.blob()};}catch(error){return{error};}})():await supabaseClient.storage.from(CLOUD_BUCKET).download(file.storagePath);
       if (error) { toast('Arquivo ignorado no backup', `${file.name}: ${error.message}`); continue; }
       encoded.push({ ...omit(file,'storagePath'), data: await blobToDataURL(data) });
     }
@@ -1802,6 +1912,7 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
   }
 
   async function clearCloudData(deleteState = true) {
+    if(sharedMode)throw Error('A base compartilhada não pode ser apagada por este comando. Exporte seu backup e use o arquivamento dos registros.');
     const files = await loadCloudFiles();
     const paths = files.map(x => x.storagePath).filter(Boolean);
     if (paths.length) {
@@ -1899,7 +2010,7 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
     state.project.okrs.forEach(x=>push('project',x.title,x));
     state.project.improvements.forEach(x=>push('project',x.title,x));
     state.project.risks.forEach(x=>push('project',x.title,x));
-    state.team.members.forEach(x=>push('team',x.name,x));
+    state.team.members.filter(x=>!x._inactive).forEach(x=>push('team',x.name,x));
     Object.values(state.leadership).flat().forEach(x=>push('leadership',x.title||x.person||x.name||'Registro de liderança',x));
     state.achievements.forEach(x=>push('achievements',x.title,x));
     Object.values(state.reviews).flat().forEach(x=>push('reviews',x.title||'Revisão',x));
@@ -1949,3 +2060,5 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
   </script>
 </body>
 </html>
+
+
