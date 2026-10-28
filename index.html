@@ -635,7 +635,7 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
   const Storage = window.NucleoStorage;
   const SUPABASE_URL = 'https://tjglsaxxlhojibnnsgyj.supabase.co';
   const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_UuizGGn_NwHqbwvzwCCstQ_ENWkcTd-';
-  const APP_URL = 'https://danypuravida.github.io/PDI/';
+  const APP_URL = new URL('.', window.location.href).href;
   const CLOUD_BUCKET = 'pdi-files';
   const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
     auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
@@ -866,19 +866,29 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
     $('#signOutButton').textContent = `Sair · ${currentUser?.email || ''}`;
   }
 
+  function defaultVisitorState() {
+    const demo = defaultState();
+    demo.meta.userName = 'Visitante';
+    demo.meta.role = 'Ambiente de demonstração';
+    demo.meta.projectName = 'Projeto de demonstração';
+    demo.annual.objectives.forEach(objective => { objective.owner = 'Visitante'; });
+    return demo;
+  }
+
   async function startAuthenticatedApp(user) {
     if (appStarted && currentUser?.id === user.id) return;
     currentUser = user;
     setCloudBadge('pending', 'Sincronizando');
     try {
-      const localState = await Storage.getState();
+      const isVisitor = user.email?.toLowerCase() === 'visitante@visitante.com';
+      const localState = isVisitor ? null : await Storage.getState();
       const remote = await loadCloudState();
       if (remote?.state && Object.keys(remote.state).length) {
         state = migrateState(remote.state);
         cloudUpdatedAt = remote.updated_at;
         await Storage.saveState(state);
       } else {
-        state = migrateState(localState || defaultState());
+        state = migrateState(localState || (isVisitor ? defaultVisitorState() : defaultState()));
         await saveCloudState(state);
       }
       fileCache = await loadCloudFiles();
