@@ -838,6 +838,7 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
 
   function authErrorMessage(error) {
     const msg = String(error?.message || error || 'Erro de autenticação');
+    if (/failed to fetch|networkerror|network request failed|load failed/i.test(msg)) return 'Não foi possível conectar ao serviço de login. Verifique sua conexão e tente novamente em instantes.';
     if (/invalid login credentials/i.test(msg)) return 'E-mail ou senha incorretos.';
     if (/email not confirmed/i.test(msg)) return 'Confirme seu e-mail antes de entrar.';
     if (/user already registered/i.test(msg)) return 'Este e-mail já possui conta. Use a opção Entrar.';
