@@ -661,7 +661,7 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
   }
   function conflictNotice(){return sharedConflict?`<div class="card" role="alert" style="border:2px solid #da963c;margin-bottom:18px"><h2>Outra edição foi salva</h2><p>Seu rascunho está preservado neste navegador. Baixe-o antes de carregar a versão atual dos dois aplicativos.</p><button class="button" data-action="shared-draft">Baixar rascunho</button> <button class="button button-primary" data-action="shared-reload">Carregar versão da nuvem</button></div>`:'';}
   function sharedGroupTabs(){
-    const groups=[['annual','pdi','reviews'],['project','achievements'],['library','methods']];const group=groups.find(a=>a.includes(currentPage));
+    const groups=[['annual','pdi','reviews'],['library','methods']];const group=groups.find(a=>a.includes(currentPage));
     return group?`<div class="tabs" style="margin-bottom:20px">${group.map(p=>`<button class="tab ${p===currentPage?'active':''}" data-action="navigate" data-page="${p}">${escapeHTML(pageMeta[p][0])}</button>`).join('')}</div>`:'';
   }
   function configureSharedNavigation(){
@@ -672,6 +672,7 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
   function activePeople(){return state.team.members.filter(x=>!x._inactive);}
   function personButton(m){return `<button class="button button-primary" data-action="person" data-id="${escapeHTML(m.id)}">${m.relationshipType==='manager'?'Alinhamentos com minha líder':'Abrir acompanhamento'}</button>`;}
   function renderSharedPeople(){
+    $('#pageTitle').textContent='Equipe e minha liderança';
     const active=activePeople(),reports=active.filter(x=>x.relationshipType!=='manager'),managers=active.filter(x=>x.relationshipType==='manager');
     if(selectedPerson){const m=active.find(x=>x.id===selectedPerson);if(m)return renderPerson(m);selectedPerson=null;}
     return `<div class="page"><section class="section"><div class="section-header"><div><h2>Equipe</h2><p>Desenvolvimento e evidências das pessoas que você acompanha.</p></div><button class="button" data-action="add" data-type="member">Adicionar pessoa</button></div><div class="grid grid-2">${reports.map(m=>`<article class="card"><h3>${escapeHTML(m.name)}</h3><p>${escapeHTML(m.role)}</p><p>${escapeHTML(m.strengths)}</p>${personButton(m)}</article>`).join('')||'<p>Nenhuma liderada no acompanhamento ativo.</p>'}</div></section><section class="section"><h2>Minha liderança</h2><p>Alinhamentos, feedbacks recebidos, expectativas e apoio ao seu desenvolvimento.</p><div class="grid grid-2">${managers.map(m=>`<article class="card"><h3>${escapeHTML(m.name)} · Minha líder</h3><p>Registre conversas e acordos da sua relação com a liderança.</p>${personButton(m)}</article>`).join('')}</div></section></div>`;
@@ -679,7 +680,8 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
   function dossierCard(title,body){return `<article class="card"><h3>${escapeHTML(title)}</h3>${body}</article>`;}
   function editDevelopmentButton(kind,m,item,label='Atualizar'){return `<button class="button button-small" data-action="development-edit" data-kind="${kind}" data-member="${m.id}" data-id="${item?.id||''}">${label}</button>`;}
   function renderPerson(m){
-    const d=m.development||{},manager=m.relationshipType==='manager';const tabs=manager?['Resumo','Alinhamentos','1:1','Fontes']:['Resumo','Competências','Ações','Evolução','Colaboração da líder','1:1','Fontes'];if(!tabs.includes(personTab))personTab='Resumo';
+    const d=m.development||{},manager=m.relationshipType==='manager';const tabs=manager?['Resumo','Alinhamentos','1:1','Fontes']:['Resumo','Competências','Ações','Evolução','Feedbacks','Colaboração da líder','1:1','Fontes'];if(!tabs.includes(personTab))personTab='Resumo';
+    $('#pageTitle').textContent=manager?'Minha liderança':'Acompanhamento de '+m.name;$('#pageEyebrow').textContent=manager?'Alinhamentos e meu desenvolvimento':'Skills, comportamentos e evolução';
     let body='';
     if(personTab==='Resumo'){
       body=dossierCard(manager?'Meu desenvolvimento com a Nath':'Quem é a Manu e onde quer chegar',`<p>${nl2br(d.summary||'Registre o contexto e as expectativas desta relação.')}</p>`);
@@ -687,32 +689,34 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
       }else body+=`<p>Os registros abaixo são sobre a sua relação com a líder. As interpretações comportamentais anteriores continuam identificadas em Fontes.</p><button class="button button-primary" data-action="person-tab" data-tab="Alinhamentos">Registrar alinhamento</button>`;
     }
     if(personTab==='Resumo'&&!manager)body+=`<button class="button" data-action="edit" data-type="member" data-id="${m.id}">Editar perfil e forças observadas</button>`;
-    if(personTab==='Ações')body=(d.actions||[]).map(x=>dossierCard(x.title,`<p>${escapeHTML(x.area)} · ${escapeHTML(x.kind)} · ${escapeHTML(x.status)}</p><p>${nl2br(x.description)}</p><p><strong>Prazo:</strong> ${x.due?formatDate(x.due):'Não informado'} · ${escapeHTML(x.dueOrigin)}</p><p><strong>Evidência:</strong> ${nl2br(x.evidence||'Ainda não registrada')}</p>${editDevelopmentButton('actions',m,x)}`)).join('');
-    if(personTab==='Competências')body=(d.competencies||[]).map(x=>dossierCard(x.title,`<p><strong>Esperado:</strong> ${escapeHTML(x.expected)}</p><p><strong>Início do ciclo:</strong> ${escapeHTML(x.baseline)}</p><p><strong>Atual:</strong> ${escapeHTML(x.status)} · ${escapeHTML(x.trend)}</p><p><strong>Evidência:</strong> ${escapeHTML(x.evidence)}</p><p><strong>Próximo passo:</strong> ${escapeHTML(x.nextStep)}</p><small>Leitura qualitativa da planilha, sem conversão em nota.</small><p>${editDevelopmentButton('competencies',m,x)}</p>`)).join('');
+    if(personTab==='Ações')body=(d.actions||[]).map(x=>dossierCard(x.title,`<p>${escapeHTML(x.area)} · ${escapeHTML(x.kind)} · ${escapeHTML(x.status)}</p><p>${nl2br(x.description)}</p><p><strong>Prazo:</strong> ${x.due?formatDate(x.due):'Não informado'} · ${escapeHTML(x.dueOrigin)}</p><p>Finalidade: ${escapeHTML(x.intent||x.kind||'A definir')} · Revisão: ${x.reviewDate?formatDate(x.reviewDate):'A combinar'}</p><p><strong>Evidência:</strong> ${nl2br(x.evidence||'Ainda não registrada')}</p>${editDevelopmentButton('actions',m,x)}`)).join('');
+    if(personTab==='Competências')body=(d.competencies||[]).map(x=>dossierCard(x.title,`<p><strong>Esperado:</strong> ${escapeHTML(x.expected)}</p><p><strong>Início do ciclo:</strong> ${escapeHTML(x.baseline)}</p><p><strong>Atual:</strong> ${escapeHTML(x.status)} · ${escapeHTML(x.trend)}</p><p><strong>Evidência:</strong> ${escapeHTML(x.evidence)}</p><p><strong>Próximo passo:</strong> ${escapeHTML(x.nextStep)}</p><p>Próxima revisão: ${x.nextReview?formatDate(x.nextReview):'A combinar'}</p><small>Leitura qualitativa da planilha, sem conversão em nota.</small><p>${editDevelopmentButton('competencies',m,x)}</p>`)).join('');
     if(personTab==='Colaboração da líder')body=`<p>Seus compromissos com o desenvolvimento da Manu, conforme o PDI em PDF.</p>`+(d.commitments||[]).map(x=>dossierCard(x.title,`<p>${nl2br(x.description)}</p><p>${escapeHTML(x.cadence)} · ${escapeHTML(x.status)}</p><p>${nl2br(x.evidence||'Sem evidência de realização registrada.')}</p>${editDevelopmentButton('commitments',m,x)}`)).join('');
     if(personTab==='Evolução'||personTab==='Alinhamentos'){
       body=`<p>${manager?'Registre expectativas, feedbacks recebidos, decisões, pedidos de apoio e seus compromissos.':'Registre fatos e evidências; o histórico da fonte não significa evolução confirmada depois da importação.'}</p>${editDevelopmentButton('observations',m,null,manager?'Novo alinhamento':'Nova evidência')}`;
-      body+=(d.observations||[]).map(x=>dossierCard(x.title,`<p>${formatDate(x.date)} · ${escapeHTML(x.kind||'Observação')}</p><p>${nl2br(x.description)}</p><p><strong>Próximo passo:</strong> ${nl2br(x.nextStep||'A definir')}</p>${editDevelopmentButton('observations',m,x)}`)).join('');
+      body+=(d.history?.length?'<details class="card"><summary>Histórico de alterações nas competências e no acompanhamento</summary>'+d.history.map(h=>'<p>'+formatDateTime(h.at)+' · '+escapeHTML(h.before?.title||'Registro')+' → '+escapeHTML(h.after?.status||h.after?.title||'Atualizado')+'</p>').join('')+'</details>':'');body+=(d.observations||[]).map(x=>dossierCard(x.title,`<p>${formatDate(x.date)} · ${escapeHTML(x.kind||'Observação')}</p><p>${nl2br(x.description)}</p><p><strong>Próximo passo:</strong> ${nl2br(x.nextStep||'A definir')}</p>${editDevelopmentButton('observations',m,x)}`)).join('');
       if(!manager){body+='<h2>Checkpoints do ciclo</h2>'+(d.checkpoints||[]).map(x=>dossierCard(x.title,`<p>${formatDate(x.date)} · ${escapeHTML(x.status)}</p><p>${nl2br(x.evidence||'Sem resultado registrado.')}</p>${editDevelopmentButton('checkpoints',m,x)}`)).join('');body+=`<details class="card"><summary>Feedback formal · 11/10/2026</summary><p>${nl2br(d.feedbackText||'')}</p></details><h2>Salva Vidas</h2><p>Recorte consultado em ${escapeHTML(d.salva?.updatedAt||'data não informada')}. Esta seção mantém a referência da importação; a planilha possui atualização horária.</p>`+(d.salva?.records||[]).map(r=>{const color=r.classification.startsWith('Impactante')?'#b31b16':r.classification.startsWith('Leve')?'#ffb7b1':r.classification.startsWith('Crítico')?'#3d3d3d':'#e6e6e6';const fg=['#b31b16','#3d3d3d'].includes(color)?'#fff':'#333';return dossierCard(r.date+' · '+r.topic,`<p><span style="background:${color};color:${fg};padding:5px 10px;border-radius:8px">${escapeHTML(r.classification)}</span></p><p>${nl2br(r.observations)}</p><p>${r.discount===null?'Sem desconto explícito':r.discount.toLocaleString('pt-BR')+' pontos'} · Linha ${r.row} da origem</p>`);}).join('');}
     }
+    if(personTab==='Feedbacks'){const rows=state.leadership.feedbacks.filter(x=>x.direction!=='received'&&(x.teamMemberId===m.id||x.person===m.name));body='<p>Histórico completo de feedbacks e evolução.</p><button class="button" data-action="person-feedback-new" data-id="'+m.id+'">Novo feedback</button>'+rows.map(readableFeedbackCard).join('');}
     if(personTab==='1:1'){
       const records=state.leadership.oneOnOnes.filter(x=>x.teamMemberId===m.id||x.person===m.name);
-      body=`<p>${manager?'Prepare sua conversa com a Nath a partir das suas prioridades, evidências e decisões necessárias.':'Use o roteiro como preparação. Não há respostas do formulário importadas.'}</p><button class="button button-primary" data-action="person-one-on-one" data-id="${m.id}">Registrar 1:1</button> <a class="button" href="${escapeHTML(state.oneOnOneTemplate?.url||'#')}" target="_blank" rel="noopener">Abrir formulário de preparação</a><div class="card" style="margin-top:18px"><h3>Roteiro de preparação</h3><ol>${(state.oneOnOneTemplate?.questions||[]).map(q=>'<li>'+escapeHTML(q)+'</li>').join('')}</ol></div><h3>Conversas registradas</h3>${records.map(oneOnOneCard).join('')||'<p>Nenhuma conversa registrada.</p>'}`;
+      body=formsPreparationPanel(m.id)+`<p>${manager?'Prepare sua conversa com a Nath a partir das suas prioridades, evidências e decisões necessárias.':'Use o roteiro como preparação. Não há respostas do formulário importadas.'}</p><button class="button button-primary" data-action="person-one-on-one" data-id="${m.id}">Registrar 1:1</button> <a class="button" href="${escapeHTML(state.oneOnOneTemplate?.url||'#')}" target="_blank" rel="noopener">Abrir formulário de preparação</a><div class="card" style="margin-top:18px"><h3>Roteiro de preparação</h3><ol>${(state.oneOnOneTemplate?.questions||[]).map(q=>'<li>'+escapeHTML(q)+'</li>').join('')}</ol></div><h3>Conversas registradas</h3>${records.map(oneOnOneCard).join('')||'<p>Nenhuma conversa registrada.</p>'}`;
     }
     if(personTab==='Fontes')body=`<p>Importação em 28/10/2026. Qulture, PDFs e documentos são referências; não recebem alterações automáticas dos aplicativos.</p>`+(d.sources||[]).map(x=>dossierCard(x.title,`<a class="button" href="${escapeHTML(x.url)}" target="_blank" rel="noopener">Abrir fonte</a>`)).join('')+(d.behavioral||[]).map(x=>dossierCard('DISC · referência comportamental',`<p>${escapeHTML(x.profile_name)} · ${formatDate(x.assessment_date)}</p><p>${escapeHTML(x.source_notes)}</p><p>Hipóteses comportamentais não substituem fatos nem avaliação de desempenho.</p>`)).join('');
-    return `<div class="page"><button class="button" data-action="person-back">← Voltar</button><h2 style="margin-top:20px">${escapeHTML(m.name)}${manager?' · Minha líder':''}</h2><div class="tabs" style="display:flex;flex-wrap:wrap;gap:8px;margin:20px 0">${tabs.map(t=>`<button class="button ${t===personTab?'button-primary':''}" data-action="person-tab" data-tab="${escapeHTML(t)}">${t}</button>`).join('')}</div><div class="grid" style="gap:18px">${body}</div></div>`;
+    return `<div class="page"><button class="button" data-action="person-back">← Voltar</button><h2 style="margin-top:20px">${escapeHTML(m.name)}${manager?' · Minha líder':''}</h2><div class="tabs" style="display:flex;flex-wrap:wrap;gap:8px;margin:20px 0">${tabs.map(t=>`<button class="button ${t===personTab?'button-primary':''}" data-action="person-tab" data-tab="${escapeHTML(t)}">${t==='Evolução'?'Prontuário e evolução':t}</button>`).join('')}</div><div class="grid" style="gap:18px">${body}</div></div>`;
   }
   function editDevelopment(kind,memberId,id){
     const m=state.team.members.find(x=>x.id===memberId);if(!m)return;
     const d=m.development||=( {} );const list=d[kind]||=[];const old=list.find(x=>x.id===id);const r=old?{...old}:{id:crypto.randomUUID(),date:todayISO(),kind:'Alinhamento',title:'',description:'',nextStep:''};
-    const definitions={actions:[f('status','Status','select',false,[['Em progresso','Em progresso'],['Finalizado','Finalizado'],['Não iniciado','Não iniciado']]),f('due','Prazo','date'),f('dueOrigin','Origem do prazo'),f('evidence','Evidência / resultado','textarea',true)],commitments:[f('status','Acompanhamento','select',true,[['A acompanhar','A acompanhar'],['Em andamento','Em andamento'],['Realizado','Realizado']]),f('evidence','Evidência / resultado','textarea',true)],competencies:[f('status','Status observado'),f('trend','Tendência'),f('evidence','Evidência','textarea',true),f('nextStep','Próximo passo','textarea',true)],checkpoints:[f('status','Status','select',true,[['Planejado','Planejado'],['Realizado','Realizado'],['Remarcado','Remarcado']]),f('date','Data','date'),f('evidence','Evidências e decisões','textarea',true)],observations:[f('title','Título','text',true),f('date','Data','date'),f('kind','Tipo','select',true,[['Alinhamento','Alinhamento'],['Expectativa','Expectativa'],['Feedback recebido','Feedback recebido'],['Pedido de apoio','Pedido de apoio'],['Decisão','Decisão'],['Compromisso','Compromisso'],['Evidência','Evidência']]),f('description','Registro factual','textarea',true),f('nextStep','Próximo passo / acordo','textarea',true)]};
+    const definitions={actions:[f('status','Status','select',false,[['Em progresso','Em progresso'],['Finalizado','Finalizado'],['Não iniciado','Não iniciado']]),f('due','Prazo','date'),f('dueOrigin','Origem do prazo'),f('evidence','Evidência / resultado','textarea',true),f('reviewDate','Data de revisão','date'),f('intent','Finalidade','select',true,[['Correção','Correção'],['Manutenção','Manutenção'],['Potencialização','Potencialização']])],commitments:[f('status','Acompanhamento','select',true,[['A acompanhar','A acompanhar'],['Em andamento','Em andamento'],['Realizado','Realizado']]),f('evidence','Evidência / resultado','textarea',true)],competencies:[f('status','Status observado'),f('trend','Tendência'),f('evidence','Evidência','textarea',true),f('nextStep','Próximo passo','textarea',true),f('nextReview','Próxima revisão','date')],checkpoints:[f('status','Status','select',true,[['Planejado','Planejado'],['Realizado','Realizado'],['Remarcado','Remarcado']]),f('date','Data','date'),f('evidence','Evidências e decisões','textarea',true)],observations:[f('title','Título','text',true),f('date','Data','date'),f('kind','Tipo','select',true,[['Alinhamento','Alinhamento'],['Expectativa','Expectativa'],['Feedback recebido','Feedback recebido'],['Pedido de apoio','Pedido de apoio'],['Decisão','Decisão'],['Compromisso','Compromisso'],['Evidência','Evidência']]),f('description','Registro factual','textarea',true),f('nextStep','Próximo passo / acordo','textarea',true)]};
     const fields=definitions[kind];if(!fields)return;
     openModal(m.relationshipType==='manager'?'Minha liderança':'Acompanhamento',r.title||'Novo registro',`<form id="developmentForm"><div class="form-grid">${fields.map(x=>renderField(x,r[x.name])).join('')}</div><div class="form-actions"><button class="button" type="button" id="cancelDevelopment">Cancelar</button><button class="button button-primary" type="submit">Salvar registro</button></div></form>`);
     $('#cancelDevelopment').onclick=closeModal;
-    $('#developmentForm').onsubmit=e=>{e.preventDefault();const form=new FormData(e.currentTarget);for(const field of fields)r[field.name]=form.get(field.name)||'';if(kind==='observations'&&!r.title.trim())return;r.updatedAt=nowISO();if(old)Object.assign(old,r);else list.unshift(r);scheduleSave();closeModal();renderPage();};
+    $('#developmentForm').onsubmit=e=>{e.preventDefault();const form=new FormData(e.currentTarget);for(const field of fields)r[field.name]=form.get(field.name)||'';if(kind==='observations'&&!r.title.trim())return;r.updatedAt=nowISO();if(old){d.history||=[];d.history.unshift({at:nowISO(),kind,itemId:old.id,before:structuredClone(old),after:structuredClone(r)});Object.assign(old,r);}else list.unshift(r);scheduleSave();closeModal();renderPage();};
   }
   function sharedActions(action){
     const {action:name,id,member,kind,tab}=action.dataset;
+    if(name==='person-feedback-new'){editSimpleFeedback(null,id);return true;}
     if(name==='person'){selectedPerson=id;personTab='Resumo';navigate('team');return true;}
     if(name==='person-back'){selectedPerson=null;renderPage();return true;}
     if(name==='person-tab'){personTab=tab;renderPage();return true;}
@@ -738,7 +742,7 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
   const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
   const uid = (prefix = 'id') => sharedMode?crypto.randomUUID(): `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
   const nowISO = () => new Date().toISOString();
-  const todayISO = () => new Date().toISOString().slice(0, 10);
+  const todayISO = () => new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
   const escapeHTML = (value = '') => String(value).replace(/[&<>'"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[ch]));
   const nl2br = (value = '') => escapeHTML(value).replace(/\n/g, '<br>');
   const clamp = (value, min = 0, max = 100) => Math.min(max, Math.max(min, Number(value) || 0));
@@ -841,6 +845,72 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
       activity: [{ id: uid('act'), type: 'system', text: 'Central criada e pronta para personalização.', date: nowISO() }]
     };
   }
+
+  function recognizeSCC(item){return !item.feedbackFormat&&!item.behavior&&!item.impact?String(item.situation||'').match(/(?:^|\n)\s*Parar\s*\n([\s\S]*?)\n\s*Começar\s*\n([\s\S]*?)\n\s*Continuar\s*\n([\s\S]*)/i):null;}
+  function feedbackContent(item){
+    const recognized=recognizeSCC(item);if(recognized)return [['Parar',recognized[1].trim()],['Começar',recognized[2].trim()],['Continuar',recognized[3].trim()]];
+    if(item.feedbackFormat==='scc')return [['Parar',item.situation],['Começar',item.behavior],['Continuar',item.impact]];
+    if(item.feedbackFormat==='free')return [['Texto livre',item.situation||'']];
+    return [['Texto',item.situation],['Comportamento',item.behavior],['Impacto',item.impact],['Perspectiva',item.intent],['Acordos',item.agreement]].filter(([,v])=>v);
+  }
+  function readableFeedbackCard(item){
+    const parts=feedbackContent(item);const preview=parts.map(([,v])=>v).join('\n');
+    return `<article class="card"><h3>${escapeHTML(item.direction==='received'?(item.author||item.person)+' → Meu desenvolvimento':item.person||'Feedback')}</h3><p>${formatDate(item.date)} · ${item.feedbackFormat==='scc'?'Parar, começar e continuar':'Texto livre'}</p><p style="white-space:pre-wrap">${escapeHTML(preview.slice(0,230))}${preview.length>230?'…':''}</p><button class="button button-primary" data-action="feedback-read" data-id="${item.id}">Ler feedback completo</button> <button class="button" data-action="feedback-edit" data-id="${item.id}">Editar</button></article>`;
+  }
+  function readFeedback(id){
+    const item=state.leadership.feedbacks.find(x=>x.id===id);if(!item)return;
+    openModal(item.direction==='received'?'Feedback recebido':'Histórico de feedbacks',(item.author||item.person||'Feedback')+' · '+formatDate(item.date),`<div style="line-height:1.8">${feedbackContent(item).map(([label,text])=>`<section><h3>${escapeHTML(label)}</h3><p style="white-space:pre-wrap;overflow-wrap:anywhere">${escapeHTML(text||'Não preenchido')}</p></section>`).join('')}${item.sourceURL?`<p><a class="button" href="${escapeHTML(item.sourceURL)}" target="_blank" rel="noopener">Abrir fonte original</a></p>`:''}${item.history?.length?`<details><summary>Versões anteriores (${item.history.length})</summary>${item.history.map(v=>`<div class="card"><p>${formatDateTime(v.at)}</p>${feedbackContent(v.record).map(([l,t])=>'<h4>'+escapeHTML(l)+'</h4><p style="white-space:pre-wrap">'+escapeHTML(t)+'</p>').join('')}</div>`).join('')}</details>`:''}</div>`,true);
+  }
+  function editSimpleFeedback(id=null,personId=null,direction='given'){
+    const existing=state.leadership.feedbacks.find(x=>x.id===id);const m=state.team.members.find(x=>x.id===personId);
+    const draft=existing?structuredClone(existing):{id:crypto.randomUUID(),person:m?.name||'',teamMemberId:m?.id||null,date:todayISO(),type:'desenvolvimento',direction,feedbackFormat:'free',situation:'',behavior:'',impact:'',_entityType:'feedback'};
+    if(!draft.feedbackFormat){const recognized=recognizeSCC(draft);if(recognized){draft.feedbackFormat='scc';draft.situation=recognized[1].trim();draft.behavior=recognized[2].trim();draft.impact=recognized[3].trim();}else{draft.feedbackFormat='free';draft.situation=feedbackContent(draft).map(([l,v])=>l==='Texto'?v:l+':\n'+v).join('\n\n');}}
+    openModal('Feedback',existing?'Editar feedback':'Novo feedback',`<form id="simpleFeedbackForm"><div class="form-grid">${renderField(f('person',draft.direction==='received'?'Quem me deu o feedback':'Para quem dei o feedback'),draft.person)}${renderField(f('date','Data','date'),draft.date)}<div class="field field-full"><label for="feedbackFormat">Formato</label><select class="select" id="feedbackFormat" name="feedbackFormat"><option value="free">Texto livre</option><option value="scc">Parar, começar e continuar</option></select></div><div id="simpleFeedbackFields" class="field-full"></div></div><div class="form-actions"><button class="button" type="button" id="cancelSimpleFeedback">Cancelar</button><button class="button button-primary" type="submit">Salvar feedback</button></div></form>`);
+    const format=$('#feedbackFormat');format.value=draft.feedbackFormat;let currentFormat=format.value;
+    const draw=()=>{$('#simpleFeedbackFields').innerHTML=currentFormat==='scc'?[f('situation','Parar','textarea',true),f('behavior','Começar','textarea',true),f('impact','Continuar','textarea',true)].map(x=>renderField(x,draft[x.name])).join(''):renderField(f('situation','Texto do feedback','textarea',true),draft.situation);};draw();
+    format.onchange=()=>{const form=new FormData($('#simpleFeedbackForm'));for(const k of ['situation','behavior','impact'])if(form.has(k))draft[k]=form.get(k);if(currentFormat==='scc'&&format.value==='free')draft.situation='Parar\n'+(draft.situation||'')+'\n\nComeçar\n'+(draft.behavior||'')+'\n\nContinuar\n'+(draft.impact||'');if(currentFormat==='free'&&format.value==='scc'){const parts=recognizeSCC({situation:draft.situation});if(parts){draft.situation=parts[1].trim();draft.behavior=parts[2].trim();draft.impact=parts[3].trim();}}currentFormat=format.value;draw();};
+    $('#cancelSimpleFeedback').onclick=closeModal;
+    $('#simpleFeedbackForm').onsubmit=e=>{e.preventDefault();const form=new FormData(e.currentTarget);const next={...draft,person:String(form.get('person')||'').trim(),date:String(form.get('date')||''),feedbackFormat:format.value,situation:String(form.get('situation')||''),behavior:format.value==='scc'?String(form.get('behavior')||''):'',impact:format.value==='scc'?String(form.get('impact')||''):'',updatedAt:nowISO()};if(!next.person||!next.situation.trim())return toast('Preencha o feedback','Informe a pessoa e o texto.');if(next.direction==='received')next.author=next.person;if(existing){next.history=[...(existing.history||[]),{at:nowISO(),record:{...existing,history:undefined}}];Object.assign(existing,next);}else state.leadership.feedbacks.unshift(next);scheduleSave();closeModal();renderPage();};
+  }
+  function formsPreparationPanel(memberId=null){
+    const data=state.formsOneOnOne||{},responses=(data.responses||[]).filter(x=>!x.removedFromSource&&(!memberId||x.memberId===memberId));
+    return `<section class="card"><h2>Preparação do 1:1</h2><p>Respostas do Forms × roteiro da líder × histórico de desenvolvimento. As propostas precisam ser discutidas e confirmadas na conversa.</p><p>${data.lastCheckedAt?'Última consulta: '+formatDateTime(data.lastCheckedAt):'Aguardando primeira consulta'} · Consulta automática a cada hora.</p><button class="button" data-action="show-guide">Ler meu roteiro</button> <a class="button" href="${escapeHTML(data.sourceURL||'#')}" target="_blank" rel="noopener">Abrir respostas no Google</a>${responses.length?responses.map(r=>`<article class="card" style="margin-top:16px"><h3>${escapeHTML(r.respondentName||'Resposta não vinculada')}</h3><p>${escapeHTML(r.submittedAt||'')} · ${r.memberId?'Pessoa vinculada':'Aguardando vínculo com uma pessoa'}</p><p>${escapeHTML(r.preparation?.summary||'Análise ainda não preparada.')}</p><button class="button button-primary" data-action="read-preparation" data-id="escape-${escapeHTML(r.id)}">Respostas e preparação</button></article>`).join(''):'<p>Nenhuma resposta importada para este acompanhamento. Quando chegar uma resposta, ela aparecerá aqui com a preparação contextualizada.</p>'}</section>`;
+  }
+  function showPreparation(id){
+    const r=(state.formsOneOnOne?.responses||[]).find(x=>x.id===id);if(!r)return;const p=r.preparation||{};
+    openModal('Forms × roteiro','Preparação · '+(r.respondentName||'1:1'),`<p><strong>Proposta de preparação:</strong> não representa reunião realizada nem compromissos já aceitos.</p><h3>Leitura das respostas</h3><p>${nl2br(p.summary||'Análise pendente.')}</p>${(p.findings||[]).map(x=>`<div class="card"><h4>${escapeHTML(x.topic)}</h4><p><strong>Na resposta:</strong> ${escapeHTML(x.responseEvidence)}</p><p><strong>Leitura para a conversa:</strong> ${escapeHTML(x.interpretation)}</p><p><strong>Validar:</strong> ${escapeHTML(x.toVerify||'')}</p></div>`).join('')}<h3>Guia da conversa</h3>${(p.sections||[]).map(x=>`<div class="card"><h4>${escapeHTML(x.title)} · ${escapeHTML(x.duration||'')}</h4><p>${escapeHTML(x.context||'')}</p><ul>${(x.questions||[]).map(q=>'<li>'+escapeHTML(q)+'</li>').join('')}</ul></div>`).join('')}<h3>Propostas de ação</h3><p>Fechar no máximo três compromissos. Definir responsável, prazo, evidência e revisão com a pessoa.</p>${(p.suggestedActions||[]).map((x,i)=>`<div class="card"><h4>${escapeHTML(x.title)}</h4><p>${escapeHTML(x.intent||'')}</p><p>${nl2br(x.description)}</p><p><strong>Evidência:</strong> ${escapeHTML(x.evidence||'A combinar')}</p><p><strong>Responsável e prazo:</strong> ${escapeHTML(x.owner||'A combinar')} · ${escapeHTML(x.due||'A combinar')}</p>${r.memberId?`<button class="button" data-action="promote-suggestion" data-id="${escapeHTML(r.id)}" data-index="${i}">Adicionar ao plano como proposta</button>`:''}</div>`).join('')}<details style="margin-top:20px"><summary>Ler respostas originais</summary>${(r.answers||[]).filter(x=>!/^endereço de e-mail$/i.test(x.question.trim())).map(x=>`<h4>${escapeHTML(x.question)}</h4><p style="white-space:pre-wrap">${escapeHTML(x.answer||'Sem resposta')}</p>`).join('')}</details>`,true);
+  }
+  function promoteSuggestion(id,index){
+    const r=(state.formsOneOnOne?.responses||[]).find(x=>x.id===id),a=r?.preparation?.suggestedActions?.[index],m=state.team.members.find(x=>x.id===r?.memberId);if(!a||!m)return;
+    m.development||={};m.development.actions||=[];const sourceKey=id+':'+index;if(m.development.actions.some(x=>x.sourceProposalKey===sourceKey))return toast('Já está no plano','A proposta já foi adicionada.');
+    openModal('Proposta — confirmar no 1:1','Revisar proposta de ação',`<form id="suggestedActionForm"><div class="form-grid">${[f('title','Ação','text',true),f('description','Comportamento / competência','textarea',true),f('owner','Responsável'),f('due','Prazo proposto','date'),f('reviewDate','Revisão proposta','date'),f('evidence','Como verificar evolução','textarea',true)].map(x=>renderField(x,a[x.name]||'')).join('')}</div><button class="button button-primary" type="submit">Adicionar como proposta</button></form>`);
+    $('#suggestedActionForm').onsubmit=e=>{e.preventDefault();const data=Object.fromEntries(new FormData(e.currentTarget));if(!data.title.trim())return;m.development.actions.push({...data,id:crypto.randomUUID(),area:'Plano de desenvolvimento',kind:a.intent||'Desenvolver',status:'Não iniciado',dueOrigin:'Proposto no preparo do 1:1 — confirmar',source:'Forms × roteiro',sourceProposalKey:sourceKey,proposed:true});scheduleSave();closeModal();renderPage();};
+  }
+  function renderLeadership(){
+    const tab=['feedbacks','oneOnOnes'].includes(currentTab.leadership)?currentTab.leadership:'oneOnOnes';
+    return `<div class="page"><div class="tab-bar"><button class="tab-button ${tab==='oneOnOnes'?'active':''}" data-action="tab" data-tab="oneOnOnes">1:1 e preparação</button><button class="tab-button ${tab==='feedbacks'?'active':''}" data-action="tab" data-tab="feedbacks">Feedbacks que dei</button></div>${tab==='oneOnOnes'?formsPreparationPanel()+`<section class="section"><h2>Conversas e acompanhamentos</h2><button class="button button-primary" data-action="add" data-type="oneOnOne">Registrar 1:1</button><div class="grid grid-2" style="margin-top:18px">${state.leadership.oneOnOnes.map(oneOnOneCard).join('')||'<p>Nenhuma conversa registrada.</p>'}</div></section>`:`<section class="section"><h2>Feedbacks que dei</h2><p>Texto livre ou parar, começar e continuar. Abra um registro para ler o texto completo.</p><button class="button button-primary" data-action="feedback-edit">Novo feedback</button><div class="grid grid-2" style="margin-top:18px">${state.leadership.feedbacks.filter(x=>x.direction!=='received').map(readableFeedbackCard).join('')||'<p>Nenhum feedback registrado.</p>'}</div></section>`}</div>`;
+  }
+  function focusedNavigation(){
+    const entries=[['dashboard','Visão geral','⌂'],['pdi','Meu desenvolvimento','↗'],['team','Equipe e minha líder','◉'],['leadership','1:1 e feedbacks','△'],['achievements','Meus feitos','★'],['library','Fontes e arquivos','▣']];
+    $('#mainNav').innerHTML=entries.map(([p,l,i])=>`<button class="nav-item" data-page="${p}"><span class="nav-icon">${i}</span><span>${l}</span></button>`).join('');$$('#mainNav [data-page]').forEach(b=>b.onclick=()=>{if(b.dataset.page==='team')selectedPerson=null;navigate(b.dataset.page);});
+  }
+  function focusedActions(action){
+    const {action:name,id}=action.dataset;
+    if(name==='feedback-received-new'){editSimpleFeedback(null,null,'received');return true;}
+    if(name==='personal-action-edit'){editPersonalAction(action.dataset.goal,id);return true;}
+    if(name==='feedback-read'){readFeedback(id);return true;}if(name==='feedback-edit'){editSimpleFeedback(id||null);return true;}
+    if(name==='show-guide'){openModal('Seu roteiro','Roteiro de 1:1',`<p>Use as respostas como pré-leitura. Aprofunde resultados, obstáculos, competências e compromissos.</p><p style="white-space:pre-wrap">${escapeHTML(state.formsOneOnOne?.guide?.text||'Roteiro não carregado.')}</p><a class="button" href="${escapeHTML(state.formsOneOnOne?.guide?.url||'#')}" target="_blank" rel="noopener">Abrir PDF original</a>`,true);return true;}
+    if(name==='read-preparation'){showPreparation(id.replace(/^escape-/,''));return true;}
+    if(name==='promote-suggestion'){promoteSuggestion(id,Number(action.dataset.index));return true;}
+    return false;
+  }
+  function editPersonalAction(goalId,id){
+    const goal=state.pdi.find(x=>x.id===goalId),a=goal?.qultureActions?.find(x=>x.id===id);if(!a)return;
+    const fields=[f('status','Status no acompanhamento','select',true,[['Não iniciado','Não iniciado'],['Em progresso','Em progresso'],['Finalizado','Finalizado']]),f('due','Prazo proposto','date'),f('reviewDate','Data de revisão','date'),f('evidence','Evidências / resultados','textarea',true)];
+    openModal('Meu desenvolvimento',a.title,`<form id="personalActionForm"><p>${escapeHTML(a.description)}</p><p>Alterações ficam no acompanhamento compartilhado. O Qulture conserva o registro original.</p><div class="form-grid">${fields.map(x=>renderField(x,a[x.name])).join('')}</div><button class="button button-primary" type="submit">Salvar acompanhamento</button></form>`);
+    $('#personalActionForm').onsubmit=e=>{e.preventDefault();goal.actionHistory||=[];goal.actionHistory.unshift({at:nowISO(),actionId:a.id,before:structuredClone(a)});Object.assign(a,Object.fromEntries(new FormData(e.currentTarget)),{updatedAt:nowISO(),dueOrigin:'Proposto no acompanhamento'});goal.progress=Math.round(goal.qultureActions.filter(x=>x.status==='Finalizado').length/goal.qultureActions.length*100);goal.status=goal.progress===100?'concluido':goal.qultureActions.some(x=>x.status!=='Não iniciado')?'andamento':'planejado';scheduleSave();closeModal();renderPage();};
+  }
+  $('#modalBody').addEventListener('click',event=>{const action=event.target.closest('[data-action]');if(action)focusedActions(action);});
 
   let state;
   let currentPage = 'dashboard';
@@ -970,7 +1040,7 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
     currentUser = user;
     Storage.setScope(user.id);
     sharedMode=await detectSharedWorkspace();
-    if(sharedMode)configureSharedNavigation();
+    if(sharedMode)focusedNavigation();
     setCloudBadge('pending', 'Sincronizando');
     try {
       const isVisitor = user.email?.toLowerCase() === 'visitante@visitante.com';
@@ -1123,7 +1193,7 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
     if (!pageMeta[page]) page = 'dashboard';
     currentPage = page;
     if (updateHash) location.hash = `/${page}`;
-    $$('.nav-item[data-page]').forEach(btn => btn.classList.toggle('active', btn.dataset.page === ({annual:'pdi',reviews:'pdi',achievements:'project',methods:'library'}[page]||page)));
+    $$('.nav-item[data-page]').forEach(btn => btn.classList.toggle('active', btn.dataset.page === ({annual:'pdi',reviews:'pdi',methods:'library'}[page]||page)));
     $('#sidebar').classList.remove('open');
     const [title, eyebrow] = pageMeta[page];
     $('#pageTitle').textContent = title;
@@ -1162,10 +1232,12 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
   function handlePageClick(event) {
     const action = event.target.closest('[data-action]');
     if (!action) return;
+    if(sharedMode&&focusedActions(action))return;
     if(sharedMode&&sharedActions(action))return;
     const { action: name, id, type, tab, page } = action.dataset;
     if (name === 'navigate') return navigate(page);
     if (name === 'tab') { currentTab[currentPage] = tab; return renderPage(); }
+    if (name === 'add'&&type==='feedback')return editSimpleFeedback();
     if (name === 'add') return openEntityModal(type);
     if (name === 'edit') return openEntityModal(type, id);
     if (name === 'delete') return deleteEntity(type, id);
@@ -1258,7 +1330,7 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
     scheduleSave('Tema atualizado');
   }
 
-  function renderDashboard() {
+  function renderLegacyDashboard() {
     const pdiProgress = avg(state.pdi.map(x => x.progress));
     const maturity = avg(Object.values(state.project.maturity)) * 20;
     const activeOKRs = state.project.okrs.filter(x => x.status !== 'concluido').length;
@@ -1387,9 +1459,15 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
     </div>`;
   }
 
+
+  function renderDashboard(){
+    return `<div class="page"><section class="hero"><h2>Desenvolvimento em foco</h2><p>Competências, observações, ações, revisões e feedbacks. Um acompanhamento com evidências para você e para a equipe.</p><div class="hero-actions"><button class="button button-primary" data-action="navigate" data-page="pdi">Meu desenvolvimento</button><button class="button" data-action="navigate" data-page="achievements">Formalizar meus feitos</button><button class="button" data-action="navigate" data-page="leadership">Preparar 1:1</button></div></section><section class="section grid grid-2">${activePeople().map(m=>dossierCard(m.name+(m.relationshipType==='manager'?' · Minha líder':''),'<p>'+escapeHTML(m.relationshipType==='manager'?'Expectativas, feedbacks e apoio ao meu desenvolvimento.':m.role||'Acompanhamento individual')+'</p>'+personButton(m))).join('')}</section>${formsPreparationPanel()}</div>`;
+  }
+  function renderPersonalSource(){const goals=state.pdi.filter(x=>x.qultureActions?.length);return goals.map(g=>`<section class="card"><h2>PDI no Qulture Rocks</h2><h3>${escapeHTML(g.title)}</h3><p>Progresso na fonte: ${g.officialProgress??0}% · Importação identificada, sem atualização automática do Qulture.</p><a class="button" href="${escapeHTML(g.sourceURL)}" target="_blank" rel="noopener">Abrir PDI original</a>${g.qultureActions.map(a=>`<article class="card" style="margin-top:16px"><h4>${escapeHTML(a.title)}</h4><p>${escapeHTML(a.mode)} · ${escapeHTML(a.status)}</p><p>${escapeHTML(a.description)}</p><p>Prazo: ${a.due?formatDate(a.due):'Não informado no Qulture'}${a.dueOrigin?' · '+escapeHTML(a.dueOrigin):''}</p><p>Evidência: ${escapeHTML(a.evidence||'Ainda não registrada')}</p><button class="button" data-action="personal-action-edit" data-goal="${g.id}" data-id="${a.id}">Atualizar acompanhamento</button></article>`).join('')}</section>`).join('');}
+
   function renderPDI() {
     const average = avg(state.pdi.map(x => x.progress));
-    return `<div class="page">
+    return `<div class="page"><section class="section">${renderPersonalSource()}</section><section class="section"><h2>Feedbacks que recebi</h2><button class="button" data-action="feedback-received-new">Registrar feedback recebido</button><div class="grid grid-2">${state.leadership.feedbacks.filter(x=>x.direction==='received').map(readableFeedbackCard).join('')||'<p>Nenhum feedback recebido importado.</p>'}</div><button class="button" data-action="navigate" data-page="achievements">Formalizar meus feitos</button></section>
       <section class="grid grid-3">
         ${metricCard('Objetivos', state.pdi.length, 'Recomendação: 2 a 3 por ciclo', '↗')}
         ${metricCard('Progresso médio', `${Math.round(average)}%`, 'Não confundir progresso com atividade', '◎')}
@@ -1498,7 +1576,7 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
     </div>`;
   }
 
-  function renderLeadership() {
+  function renderLegacyLeadership() {
     const tab = currentTab.leadership || 'oneOnOnes';
     const tabs = [['oneOnOnes','1:1'],['feedbacks','Feedback'],['delegations','Delegação'],['decisions','Decisões'],['stakeholders','Stakeholders']];
     const configs = {
@@ -1665,7 +1743,7 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
   }
 
   function oneOnOneCard(item) { return genericRecordCard(item, item.person, formatDate(item.date), item.commitment); }
-  function feedbackCard(item) { return genericRecordCard(item, item.person, `${item.type || 'Feedback'} · ${formatDate(item.date)}`, item.impact); }
+  function feedbackCard(item) { return readableFeedbackCard(item); }
   function delegationCard(item) { return genericRecordCard(item, item.title, item.owner, item.result); }
   function decisionCard(item) { return genericRecordCard(item, item.title, formatDate(item.date), item.criterion); }
   function stakeholderCard(item) { return genericRecordCard(item, item.name, `Influência: ${item.influence || '—'}`, item.strategy); }
@@ -1728,6 +1806,7 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
   function openEntityModal(type, id = null) {
     const config = entityConfig[type];
     if (!config) return;
+    if(type==='feedback')return editSimpleFeedback(id);
     const list = getByPath(state, config.path);
     const existing = id ? list.find(x => x.id === id) : null;
     const record = existing ? { ...existing } : { id: uid(type), createdAt: nowISO(), date: todayISO(), status:'planejado', progress:0, _entityType:type };
@@ -2060,5 +2139,7 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
   </script>
 </body>
 </html>
+
+
 
 
