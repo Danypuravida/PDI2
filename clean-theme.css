@@ -1,0 +1,28 @@
+/* Match the Danielle OS paper workspace; keep the standalone dark preference available. */
+:root:is([data-os-clean],:not([data-theme=dark])){color-scheme:light;--bg:#f5f4ed;--surface:#fffef9;--surface-2:#f6f7ef;--surface-3:#ecefe2;--text:#344130;--muted:#68725f;--subtle:#737e68;--line:#dfe3d5;--line-strong:#c9d2bc;--navy:#eef0e4;--navy-2:#e7ecdc;--accent:#667c55;--accent-2:#546d42;--accent-soft:#e8efdf;--gold:#997b40;--gold-soft:#f8f0dd;--success:#376d4b;--warning:#94641e;--danger:#a6423b;--shadow-sm:0 2px 8px #34413005;--shadow-md:0 10px 32px #3441300a}
+:root:is([data-os-clean],:not([data-theme=dark])) .sidebar{background:#eeefe5;color:var(--text);box-shadow:none;border-right:1px solid var(--line)}
+:root:is([data-os-clean],:not([data-theme=dark])) .brand-mark{background:#e1e9d5;color:#4c643a;box-shadow:none}
+:root:is([data-os-clean],:not([data-theme=dark])) .brand span,:root:is([data-os-clean],:not([data-theme=dark])) .nav-item,:root:is([data-os-clean],:not([data-theme=dark])) .nav-icon,:root:is([data-os-clean],:not([data-theme=dark])) .privacy-chip{color:#627154}
+:root:is([data-os-clean],:not([data-theme=dark])) .nav-item:hover{background:#e5ebdc;color:#3f5732}
+:root:is([data-os-clean],:not([data-theme=dark])) .nav-item.active{background:#fffef9;color:#3f5732;box-shadow:inset 3px 0 #889d73}
+:root:is([data-os-clean],:not([data-theme=dark])) .nav-item.active .nav-icon{color:#667c55}
+:root:is([data-os-clean],:not([data-theme=dark])) .sidebar-footer{border-color:var(--line)}
+:root:is([data-os-clean],:not([data-theme=dark])) .hero{background:#eaf0e0;color:#344130;border:1px solid #d8e2cb;box-shadow:none}
+:root:is([data-os-clean],:not([data-theme=dark])) .hero p,:root:is([data-os-clean],:not([data-theme=dark])) .hero-aside small,:root:is([data-os-clean],:not([data-theme=dark])) .hero .eyebrow{color:#5c704a}
+:root:is([data-os-clean],:not([data-theme=dark])) .hero h2,:root:is([data-os-clean],:not([data-theme=dark])) .page-heading h1{font-family:Georgia,serif;font-weight:400;letter-spacing:-.6px}
+:root:is([data-os-clean],:not([data-theme=dark])) .hero-aside{border-color:#cad7bc}
+:root:is([data-os-clean],:not([data-theme=dark])) .hero .button:not(.button-primary){background:#fffef9;color:#4b633b;border-color:#d2ddc5}
+:root:is([data-os-clean],:not([data-theme=dark])) .hero::after{border-color:#a5b78d30}
+:root:is([data-os-clean],:not([data-theme=dark])) .metric-value{font-family:Georgia,serif;font-weight:400}
+:root:is([data-os-clean],:not([data-theme=dark])) .save-strip,:root:is([data-os-clean],:not([data-theme=dark])) .toast{background:#eef2e6;color:#3e5532;border:1px solid #d4dfc8}
+:root:is([data-os-clean],:not([data-theme=dark])) .auth-gate{background:#f5f4ed}
+:root:is([data-os-clean],:not([data-theme=dark])) .auth-card{background:#fffef9;color:#344130;border-color:#dfe3d5;box-shadow:0 10px 35px #3441300a}
+:root:is([data-os-clean],:not([data-theme=dark])) .auth-card .auth-subtitle,:root:is([data-os-clean],:not([data-theme=dark])) .auth-card .field label,:root:is([data-os-clean],:not([data-theme=dark])) .auth-message,:root:is([data-os-clean],:not([data-theme=dark])) .auth-loading{color:#68725f}
+:root:is([data-os-clean],:not([data-theme=dark])) .auth-card .input{background:#fffefa;color:#344130;border-color:#d6ddca}
+:root:is([data-os-clean],:not([data-theme=dark])) .auth-switch{color:#536d41}
+:root:is([data-os-clean],:not([data-theme=dark])) .auth-message.error{color:#a6423b}
+:root:is([data-os-clean],:not([data-theme=dark])) .auth-spinner{border-color:#dfe3d5;border-top-color:#7a9565}
+:root:is([data-os-clean],:not([data-theme=dark])) .input::placeholder{color:#737e68}
+:root:is([data-os-clean],:not([data-theme=dark])) :is(button,a,input,select,textarea):focus-visible{outline:3px solid #9eaf8c;outline-offset:3px}
+:root[data-os-clean] #themeToggle{display:none}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}

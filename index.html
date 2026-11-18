@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#0b1220" />
+  <meta name="theme-color" content="#f5f4ed" />
   <meta name="description" content="Central local e privada para PDI, liderança, desenvolvimento de equipe, projeto e portfólio profissional." />
   <title>Núcleo — Central de Desenvolvimento</title>
   <style>
@@ -436,6 +436,8 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
 
   @media(max-width:520px){.topbar{flex-wrap:wrap;gap:10px}.page-heading{flex:1;min-width:0}.topbar-actions{flex-basis:100%;justify-content:flex-end;min-width:0;width:100%;flex-wrap:wrap}.search-wrap{transition:none;flex:0 0 42px;max-width:42px}.search-wrap:focus-within{max-width:none;flex-basis:auto}.card{overflow-wrap:anywhere}.button{max-width:100%}}
 </style>
+<link rel="stylesheet" href="./clean-theme.css?v=1">
+<script>if(new URLSearchParams(location.search).get("embedded")==="1")document.documentElement.setAttribute("data-os-clean","");</script>
 </head>
 <body>
   <noscript>Este aplicativo precisa de JavaScript habilitado.</noscript>
@@ -1321,7 +1323,7 @@ mark { background:var(--gold-soft);color:var(--text);border-radius:3px;padding:0
 
   function applyTheme(theme) {
     document.documentElement.dataset.theme = theme === 'dark' ? 'dark' : 'light';
-    document.querySelector('meta[name="theme-color"]').setAttribute('content', theme === 'dark' ? '#08101d' : '#0b1220');
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', theme === 'dark' ? '#08101d' : '#f5f4ed');
   }
 
   function toggleTheme() {
